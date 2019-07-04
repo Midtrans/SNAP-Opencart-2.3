@@ -62,6 +62,19 @@
 	</div>
 	<!-- Display name -->
 
+	<div class="form-group required v2_settings sensitive">
+	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
+	    <div class="col-sm-3">
+		  <input type="text" name="snap_merchant_id" value="<?php echo $snap_merchant_id; ?>" id="input-merchant-id" class="form-control" />
+		</div>
+		<div class="col-sm-3">
+		 <?php if (isset($error['merchant_id'])) { ?>
+			<div class="col-sm-3"> <?php echo $error['merchant_id']; ?> </div>
+		 <?php } ?>
+		</div>
+	</div>
+	<!-- Merchant Id (v2-specific) -->
+
 	<div class="form-group v2_settings sensitive required">
 	  <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_environment; ?></label>
 	    <div class="col-sm-3">
@@ -79,19 +92,7 @@
 		</div>
 	</div>
 	<!-- Environment (v2-specific) -->
-
-	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
-	    <div class="col-sm-3">
-		  <input type="text" name="snap_merchant_id" value="<?php echo $snap_merchant_id; ?>" id="input-merchant-id" class="form-control" />
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['merchant_id'])) { ?>
-			<div class="col-sm-3"> <?php echo $error['merchant_id']; ?> </div>
-		 <?php } ?>
-		</div>
-	</div>
-						
+	
 	<div class="form-group required v2_settings sensitive">
 	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_client_key; ?></label>
 	    <div class="col-sm-3">
@@ -104,7 +105,6 @@
 		</div>
 	</div>
 	<!-- Client Key (v2-specific) -->
-
 
 	<div class="form-group required v2_settings sensitive">
 	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_server_key; ?></label>
@@ -158,7 +158,7 @@
 	 <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_custom_field; ?></label>
 	  <div class="col-sm-3">
 	   <input type="text" name="snap_custom_field1" value="<?php echo $snap_custom_field1; ?>" class="form-control" />
-	   <span> 'This will allow you to set custom fields that will be displayed on Midtrans dashboard.</span>
+	   <span> This will allow you to set custom fields that will be displayed on Midtrans dashboard.</span>
 	  </div>
 	  <div class="col-sm-3">
 	   <input type="text" name="snap_custom_field2" value="<?php echo $snap_custom_field2; ?>" class="form-control" />

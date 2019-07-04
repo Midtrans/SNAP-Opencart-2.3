@@ -17,7 +17,6 @@ status code
 16 voided
 */
 
-
 require_once(DIR_SYSTEM . 'library/veritrans-php/Veritrans.php');
 
 class ControllerExtensionPaymentSnapinst extends Controller {
@@ -228,10 +227,13 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $installment = array();
     $installment_term = array();
     
-    $installment_term['bni'] = array(3,6,9,12,18,24,36);
-    $installment_term['mandiri'] = array(3,6,9,12,18,24,36);
-    $installment_term['cimb'] = array(3,6,9,12,18,24,36);
-    $installment_term['offline'] = array(1,2,3,4,5,6,12);
+    $installment_term['bni'] = array(3,6,9,12,15,18,21,24,27,30,33,36;
+    $installment_term['mandiri'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
+    $installment_term['cimb'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
+    $installment_term['bri'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
+    $installment_term['maybank'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
+    $installment_term['bca'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
+    $installment_term['mega'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
 
     $installment['required'] = TRUE;
     $installment['terms'] = $installment_term;    

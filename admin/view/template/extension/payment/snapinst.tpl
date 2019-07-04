@@ -62,6 +62,19 @@
 	</div>
 	<!-- Display name -->
 
+	<div class="form-group required v2_settings sensitive">
+	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
+		<div class="col-sm-3">
+		  <input type="text" name="snapinst_merchant_id" value="<?php echo $snapinst_merchant_id; ?>" id="input-merchant-id" class="form-control" />
+		</div>
+		<div class="col-sm-3">
+		 <?php if (isset($error['server_key'])) { ?>
+		   <div class="col-sm-3"> <?php echo $error['server_key']; ?> </div>
+		 <?php } ?>
+		</div>
+	</div>
+	<!-- Merchant Id (v2-specific) -->
+
 	<div class="form-group v2_settings sensitive required">
 	  <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_environment; ?></label>
 	    <div class="col-sm-3">
@@ -81,17 +94,17 @@
 	<!-- Environment (v2-specific) -->
 
 	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
-		<div class="col-sm-3">
-		  <input type="text" name="snapinst_merchant_id" value="<?php echo $snapinst_merchant_id; ?>" id="input-merchant-id" class="form-control" />
+	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_client_key; ?></label>
+	    <div class="col-sm-3">
+		  <input type="text" name="snapinst_client_key" value="<?php echo $snapinst_client_key; ?>" id="input-merchant-id" class="form-control" />
 		</div>
 		<div class="col-sm-3">
-		 <?php if (isset($error['server_key'])) { ?>
-		   <div class="col-sm-3"> <?php echo $error['server_key']; ?> </div>
+		 <?php if (isset($error['client_key'])) { ?>
+			<div class="col-sm-3"> <?php echo $error['client_key']; ?> </div>
 		 <?php } ?>
 		</div>
 	</div>
-	<!-- Server Key (v2-specific) -->
+	<!-- Client Key (v2-specific) -->
 
 	<div class="form-group required v2_settings sensitive">
 	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_server_key; ?></label>
@@ -105,19 +118,6 @@
 		</div>
 	</div>
 	<!-- Server Key (v2-specific) -->
-
-	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_client_key; ?></label>
-	    <div class="col-sm-3">
-		  <input type="text" name="snapinst_client_key" value="<?php echo $snapinst_client_key; ?>" id="input-merchant-id" class="form-control" />
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['client_key'])) { ?>
-			<div class="col-sm-3"> <?php echo $error['client_key']; ?> </div>
-		 <?php } ?>
-		</div>
-	</div>
-	<!-- Client Key (v2-specific) -->
 
 	<div class="form-group required v2_settings sensitive">
 	  <label class="col-sm-2 control-label" for="input-min-txn"><?php echo $entry_min_txn; ?></label>

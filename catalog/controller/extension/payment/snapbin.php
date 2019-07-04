@@ -17,7 +17,6 @@ status code
 16 voided
 */
 
-
 require_once(DIR_SYSTEM . 'library/veritrans-php/Veritrans.php');
 
 class ControllerExtensionPaymentSnapbin extends Controller {
