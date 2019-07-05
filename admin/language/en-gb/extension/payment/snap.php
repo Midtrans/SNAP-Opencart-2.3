@@ -12,10 +12,10 @@ $_['text_fail']          = 'Always Fail';
 $_['text_edit']          = 'Configure Midtrans Snap';
 
 // Entry
-$_['entry_environment']  = 'Environment'; // v2 API only
-$_['entry_merchant_id']  = 'Merchant Id'; // v2 API only
-$_['entry_client_key']   = 'Client Key'; // v2 API only
-$_['entry_server_key']   = 'Server Key'; // v2 API only
+$_['entry_environment']  = 'Environment';
+$_['entry_merchant_id']  = 'Merchant Id';
+$_['entry_client_key']   = 'Client Key';
+$_['entry_server_key']   = 'Server Key';
 $_['entry_3d_secure']    = 'Enable 3D Secure?';
 $_['entry_payment_type'] = 'Payment Type';
 $_['entry_test']         = 'Test Mode:';
@@ -24,7 +24,7 @@ $_['entry_order_status'] = 'Order Status:';
 $_['entry_oneclick']     = 'One Click:';
 $_['entry_custom_field'] = 'Custom Field';
 $_['entry_expiry']		 = 'Custom Expiry';
-$_['entry_mixpanel']	 = 'Disable Midtrans Mixpanel';
+$_['entry_mixpanel']	 = 'Midtrans Mixpanel';
 $_['entry_geo_zone']     = 'Geo Zone:';
 $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';

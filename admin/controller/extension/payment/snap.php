@@ -44,6 +44,7 @@ class ControllerExtensionPaymentSnap extends Controller {
       'entry_3d_secure',
       'entry_expiry',
       'entry_custom_field',
+      'entry_mixpanel',
       'entry_payment_type',
       'entry_enable_bank_installment',
       'entry_currency_conversion',
@@ -104,6 +105,7 @@ class ControllerExtensionPaymentSnap extends Controller {
       'snap_custom_field1',
       'snap_custom_field2',
       'snap_custom_field3',
+      'snap_mixpanel',
       'snap_display_name',
       'snap_enabled_payments',
       'snap_sanitization'

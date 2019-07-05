@@ -40,7 +40,8 @@ class ControllerExtensionPaymentSnap extends Controller {
     $data['client_key'] = $this->config->get('snap_client_key');
     $data['environment'] = $this->config->get('snap_environment');
     $data['text_loading'] = $this->language->get('text_loading');
-
+    $data['disable_mixpanel'] = $this->config->get('snap_mixpanel');
+    
     $data['process_order'] = $this->url->link('extension/payment/snap/process_order'); 
      
     return $this->load->view('extension/payment/snap', $data);

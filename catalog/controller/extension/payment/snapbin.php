@@ -41,6 +41,7 @@ class ControllerExtensionPaymentSnapbin extends Controller {
     $data['client_key'] = $this->config->get('snapbin_client_key');
     $data['environment'] = $this->config->get('snapbin_environment');
     $data['text_loading'] = $this->language->get('text_loading');
+    $data['disable_mixpanel'] = $this->config->get('snapbin_mixpanel');
 
   	$data['process_order'] = $this->url->link('extension/payment/snapbin/process_order');
 

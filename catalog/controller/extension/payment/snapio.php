@@ -42,6 +42,7 @@ class ControllerExtensionPaymentSnapio extends Controller {
     $data['min_txn'] = $this->config->get('snapio_min_txn');
     $data['environment'] = $this->config->get('snapio_environment');
     $data['text_loading'] = $this->language->get('text_loading');
+    $data['disable_mixpanel'] = $this->config->get('snapio_mixpanel');
 
   	$data['process_order'] = $this->url->link('extension/payment/snapio/process_order');
 

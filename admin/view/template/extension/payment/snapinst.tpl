@@ -132,6 +132,19 @@
 	</div>
 	<!-- Min transaction -->
 
+	<div class="form-group required v2_settings sensitive">
+      <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_mixpanel; ?></label>
+		<div class="col-sm-3">
+		 <select name="snap_mixpanel" id="input-mode" class="form-control">
+		  <?php $options = array('1' => $text_disabled, '0' => $text_enabled) ?>
+		   <?php foreach ($options as $key => $value): ?>
+		    <option value="<?php echo $key ?>" <?php if ($key == $snap_mixpanel) echo 'selected' ?> ><?php echo $value ?></option>
+		   <?php endforeach ?>
+		  </select>
+		</div>
+	 </div>
+	 <!-- mixpanel -->
+
 	<div class="form-group required">
 	 <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_currency_conversion; ?></label>
 	  <div class="col-sm-3">

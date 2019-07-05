@@ -41,6 +41,7 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $data['min_txn'] = $this->config->get('snapinst_min_txn');
     $data['environment'] = $this->config->get('snapinst_environment');
     $data['text_loading'] = $this->language->get('text_loading');
+    $data['disable_mixpanel'] = $this->config->get('snapinst_mixpanel');
 
   	$data['process_order'] = $this->url->link('extension/payment/snapinst/process_order');
 
