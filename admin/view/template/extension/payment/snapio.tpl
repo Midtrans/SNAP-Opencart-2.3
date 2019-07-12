@@ -62,6 +62,19 @@
 	</div>
 	<!-- Display name -->
 
+	<div class="form-group required v2_settings sensitive">
+	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
+		<div class="col-sm-3">
+		  <input type="text" name="snapio_merchant_id" value="<?php echo $snapio_merchant_id; ?>" id="input-merchant-id" class="form-control" />
+		</div>
+		<div class="col-sm-3">
+		 <?php if (isset($error['merchant_id'])) { ?>
+		   <div class="col-sm-3"> <?php echo $error['merchant_id']; ?> </div>
+		 <?php } ?>
+		</div>
+	</div>
+	<!-- Merchant Id (v2-specific) -->
+
 	<div class="form-group v2_settings sensitive required">
 	  <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_environment; ?></label>
 	    <div class="col-sm-3">
@@ -81,17 +94,17 @@
 	<!-- Environment (v2-specific) -->
 
 	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
-		<div class="col-sm-3">
-		  <input type="text" name="snapio_merchant_id" value="<?php echo $snapio_merchant_id; ?>" id="input-merchant-id" class="form-control" />
+	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_client_key; ?></label>
+	    <div class="col-sm-3">
+		  <input type="text" name="snapio_client_key" value="<?php echo $snapio_client_key; ?>" id="input-merchant-id" class="form-control" />
 		</div>
 		<div class="col-sm-3">
-		 <?php if (isset($error['merchant_id'])) { ?>
-		   <div class="col-sm-3"> <?php echo $error['merchant_id']; ?> </div>
+		 <?php if (isset($error['client_key'])) { ?>
+			<div class="col-sm-3"> <?php echo $error['client_key']; ?> </div>
 		 <?php } ?>
 		</div>
 	</div>
-	<!-- Server Key (v2-specific) -->
+	<!-- Client Key (v2-specific) -->
 
 	<div class="form-group required v2_settings sensitive">
 	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_server_key; ?></label>
@@ -107,19 +120,6 @@
 	<!-- Server Key (v2-specific) -->
 
 	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_client_key; ?></label>
-	    <div class="col-sm-3">
-		  <input type="text" name="snapio_client_key" value="<?php echo $snapio_client_key; ?>" id="input-merchant-id" class="form-control" />
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['client_key'])) { ?>
-			<div class="col-sm-3"> <?php echo $error['client_key']; ?> </div>
-		 <?php } ?>
-		</div>
-	</div>
-	<!-- Client Key (v2-specific) -->
-
-	<div class="form-group required v2_settings sensitive">
 	  <label class="col-sm-2 control-label" for="input-min-txn"><?php echo $entry_min_txn; ?></label>
 		<div class="col-sm-3">
 		  <input type="text" name="snapio_min_txn" value="<?php echo $snapio_min_txn; ?>" id="input-merchant-id" class="form-control" />
@@ -131,6 +131,19 @@
 		</div>
 	</div>
 	<!-- Min transaction -->
+
+	<div class="form-group required v2_settings sensitive">
+      <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_mixpanel; ?></label>
+		<div class="col-sm-3">
+		 <select name="snap_mixpanel" id="input-mode" class="form-control">
+		  <?php $options = array('1' => $text_disabled, '0' => $text_enabled) ?>
+		   <?php foreach ($options as $key => $value): ?>
+		    <option value="<?php echo $key ?>" <?php if ($key == $snap_mixpanel) echo 'selected' ?> ><?php echo $value ?></option>
+		   <?php endforeach ?>
+		  </select>
+		</div>
+	 </div>
+	 <!-- mixpanel -->
 
 	<div class="form-group required">
 	 <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_currency_conversion; ?></label>

@@ -13,10 +13,11 @@ $_['text_edit']          = 'Configure Midtrans Snapbin';
 
 // Entry
 $_['entry_environment']  = 'Environment';
-$_['entry_merchant_id']  = 'Merchant Id'; // v2 API only
-$_['entry_client_key']   = 'Client Key'; // v2 API only
-$_['entry_server_key']   = 'Server Key'; // v2 API only
-$_['entry_oneclick']     = 'One Click'; // v2 API only
+$_['entry_merchant_id']  = 'Merchant Id';
+$_['entry_client_key']   = 'Client Key';
+$_['entry_server_key']   = 'Server Key';
+$_['entry_oneclick']     = 'One Click';
+$_['entry_mixpanel']	 = 'Midtrans Mixpanel';
 $_['entry_bin_number']   = 'Bin Number(s)';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';
 $_['entry_geo_zone']     = 'Geo Zone:';

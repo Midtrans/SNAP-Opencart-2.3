@@ -12,11 +12,12 @@ $_['text_fail']          = 'Always Fail';
 $_['text_edit']          = 'Configure Midtrans Snap Installment';
 
 // Entry
-$_['entry_environment']  = 'Environment'; // v2 API only
-$_['entry_merchant_id']   = 'Merchant Id'; // v2 API only
-$_['entry_client_key']   = 'Client Key'; // v2 API only
-$_['entry_server_key']   = 'Server Key'; // v2 API only
+$_['entry_environment']  = 'Environment';
+$_['entry_merchant_id']  = 'Merchant Id'; 
+$_['entry_client_key']   = 'Client Key';
+$_['entry_server_key']   = 'Server Key';
 $_['entry_min_txn']      = 'Minimum Transaction';
+$_['entry_mixpanel']	 = 'Midtrans Mixpanel';
 $_['entry_payment_type'] = 'Payment Type';
 $_['entry_test']         = 'Test Mode:';
 $_['entry_total']        = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';

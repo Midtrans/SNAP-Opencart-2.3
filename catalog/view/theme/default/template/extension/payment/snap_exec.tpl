@@ -53,16 +53,6 @@
         For payment instruction click <a href="<?=$data['instruction']?>" target="blank">here<a></br>
       <?php
       break;
-      case "xl_tunai"
-      ?>
-        <h1>Payment has not complete yet!</h1>
-        your order has been received but has not been paid yet</br>
-        you place order with <b><?=$data['payment_method']?></b></br>
-        your Xl Tunai order id : <b><?=$data['xl_tunai_order_id']?></b></br>
-        your Xl Tunai merchant code : <b><?=$data['merchant_code']?></b></br>
-        <?=$data['instruction']?>
-      <?php
-      break;
       case "bca_klikpay"
       ?>
         <div class="container"><?php echo $content_top; ?>
@@ -73,6 +63,11 @@
       <?php echo $footer; ?>
       <?php
       break;
+      default
+      ?>
+        <h1>Thank you. Your order has been received.</h1>
+        you place order with <b><?=$data['payment_method']?></b></br>
+      <?php       
       }
       ?>
       
