@@ -214,18 +214,10 @@ class ControllerExtensionPaymentSnapio extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    Veritrans_Config::$serverKey = $this->config->
-        get('snapio_server_key');
-
-    Veritrans_Config::$isProduction =
-        $this->config->get('snapio_environment') == 'production'
-        ? true : false;
-
-    Veritrans_Config::$is3ds = true;
-
+    Veritrans_Config::$serverKey = $this->config->get('snapio_server_key');
+    Veritrans_Config::$isProduction = $this->config->get('snapio_environment') == 'production' ? true : false;
     Veritrans_Config::$isSanitized = true;
 
-    $credit_card['save_card'] = true;
     $installment = array();
     $installment_term = array();
     
@@ -241,13 +233,38 @@ class ControllerExtensionPaymentSnapio extends Controller {
     $payloads['item_details']        = $item_details;
     $payloads['customer_details']    = $customer_details;
     $payloads['enabled_payments']    = array('credit_card');
-    
-    if ($transaction_details['gross_amount'] >= $this->config->get('snapinst_min_txn')){
-      $payloads['credit_card'] = $credit_card;
+    $payloads['credit_card']['secure'] = true;
+
+    if ($transaction_details['gross_amount'] >= $this->config->get('snapio_min_txn')){
+      // Build bank & terms array
+      $termsStr = explode(',', $this->config->get('snapio_installment_term'));
+      $terms = array();
+      foreach ($termsStr as $termStr) {
+        $terms[] = (int)$termStr;
+      };
+          
+      if ($this->config->get('snapio_acq_bank') !== '') {
+        $payloads['credit_card']['bank'] = $this->config->get('snapio_acq_bank');
+      }
+      // Add installment param
+      $payloads['credit_card']['installment']['required'] = true;
+      $payloads['credit_card']['installment']['terms'] = 
+        array(
+          'offline' => $terms
+        );
     }
 
+    if ($this->config->get('snapio_number') !== '') {
+      $bin = explode(',', $this->config->get('snapio_number'));
+      $payloads['credit_card']['whitelist_bins'] = $bin;
+    }
+
+    if(!empty($this->config->get('snapio_custom_field1'))){$payloads['custom_field1'] = $this->config->get('snapio_custom_field1');}
+    if(!empty($this->config->get('snapio_custom_field2'))){$payloads['custom_field2'] = $this->config->get('snapio_custom_field2');}
+    if(!empty($this->config->get('snapio_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapio_custom_field3');}
+
     try {
-      error_log(print_r($payloads,TRUE));
+      // error_log(print_r($payloads,ssTRUE));
       $snapToken = Veritrans_Snap::getSnapToken($payloads);      
       
       //$this->response->setOutput($redirUrl);

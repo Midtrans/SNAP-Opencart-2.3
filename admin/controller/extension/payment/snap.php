@@ -21,6 +21,36 @@ class ControllerExtensionPaymentSnap extends Controller {
       $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true));
     }
 
+    if (isset($this->error['warning'])) {
+      $data['error_warning'] = $this->error['warning'];
+    } else {
+      $data['error_warning'] = '';
+    }
+
+    if (isset($this->error['display_name'])) {
+      $data['error_display_name'] = $this->error['display_name'];
+    } else {
+      $data['error_display_name'] = '';
+    }
+    
+    if (isset($this->error['merchant_id'])) {
+      $data['error_merchant'] = $this->error['merchant_id'];
+    } else {
+      $data['error_merchant'] = '';
+    }
+
+    if (isset($this->error['server_key'])) {
+      $data['error_server_key'] = $this->error['server_key'];
+    } else {
+      $data['error_server_key'] = '';
+    }
+
+    if (isset($this->error['client_key'])) {
+      $data['error_client_key'] = $this->error['client_key'];
+    } else {
+      $data['error_client_key'] = '';
+    }
+
     $language_entries = array(
 
       'heading_title',
@@ -37,7 +67,6 @@ class ControllerExtensionPaymentSnap extends Controller {
       'entry_server_key',
       'entry_merchant_id',
       'entry_oneclick',
-      'entry_order_status',
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',
@@ -45,11 +74,13 @@ class ControllerExtensionPaymentSnap extends Controller {
       'entry_expiry',
       'entry_custom_field',
       'entry_mixpanel',
-      'entry_payment_type',
-      'entry_enable_bank_installment',
       'entry_currency_conversion',
       'entry_client_key',
       'entry_display_name',
+      
+      'help_savecard',
+      'help_expiry',
+      'help_custom_field',
 
       'button_save',
       'button_cancel'
@@ -57,12 +88,6 @@ class ControllerExtensionPaymentSnap extends Controller {
 
     foreach ($language_entries as $language_entry) {
       $data[$language_entry] = $this->language->get($language_entry);
-    }
-
-    if (isset($this->error['warning'])) {
-      $data['error_warning'] = $this->error['warning'];
-    } else {
-      $data['error_warning'] = '';
     }
 
     $data['breadcrumbs'] = array();
@@ -146,50 +171,33 @@ class ControllerExtensionPaymentSnap extends Controller {
   }
 
   protected function validate() {
-
     if (!$this->user->hasPermission('modify', 'extension/payment/snap')) {
       $this->error['warning'] = $this->language->get('error_permission');
     }
-
-    // Override version to v2
-    $version = 2;
-
-    // temporarily always set the payment type to vtweb if the api_version == 2
-    if ($version == 2)
-      $this->request->post['snap_payment_type'] = 'vtweb';
-
-    $payment_type = $this->request->post['snap_payment_type'];
-    if (!in_array($payment_type, array('vtweb', 'vtdirect')))
-      $payment_type = 'vtweb';
 
     // check for empty values
     if (!$this->request->post['snap_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
 
-    // version-specific validation
-
+    // check for empty values
     if (!$this->request->post['snap_client_key']) {
       $this->error['client_key'] = $this->language->get('error_client_key');
     }
 
+    // check for empty values
     if (!$this->request->post['snap_server_key']) {
       $this->error['server_key'] = $this->language->get('error_server_key');
     }      
     
-      // default values
+    // default values
     if (!$this->request->post['snap_environment'])
       $this->request->post['snap_environment'] = 1;
 
-      // check for empty values
-    if (!$this->request->post['snap_client_key']) {
-       $this->error['client_key'] = $this->language->get('error_client_key');
-    }
-
-    if (!$this->request->post['snap_server_key']) {
-      $this->error['server_key'] = $this->language->get('error_server_key');
-    }
-    
+    // check for empty values
+    if (!$this->request->post['snap_merchant_id']) {
+       $this->error['merchant_id'] = $this->language->get('error_merchant');
+    }    
     // currency conversion to IDR
     if (!$this->request->post['snap_currency_conversion'] && !$this->currency->has('IDR'))
       $this->error['currency_conversion'] = $this->language->get('error_currency_conversion');

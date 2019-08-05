@@ -213,18 +213,10 @@ class ControllerExtensionPaymentSnapinst extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    Veritrans_Config::$serverKey = $this->config->
-        get('snapinst_server_key');
-
-    Veritrans_Config::$isProduction =
-        $this->config->get('snapinst_environment') == 'production'
-        ? true : false;
-
-    Veritrans_Config::$is3ds = true;
-
+    Veritrans_Config::$serverKey = $this->config->get('snapinst_server_key');
+    Veritrans_Config::$isProduction = $this->config->get('snapinst_environment') == 'production' ? true : false;
     Veritrans_Config::$isSanitized = true;
 
-    $credit_card['save_card'] = true;
     $installment = array();
     $installment_term = array();
     
@@ -247,13 +239,17 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $payloads['transaction_details'] = $transaction_details;
     $payloads['item_details']        = $item_details;
     $payloads['customer_details']    = $customer_details;
-    $payloads['enabled_payments']    = array('credit_card');    
+    $payloads['enabled_payments']    = array('credit_card');
+    $payloads['credit_card']['secure'] = true; 
     $payloads['credit_card'] = $credit_card;
-  
+
+    if(!empty($this->config->get('snapinst_custom_field1'))){$payloads['custom_field1'] = $this->config->get('snapinst_custom_field1');}
+    if(!empty($this->config->get('snapinst_custom_field2'))){$payloads['custom_field2'] = $this->config->get('snapinst_custom_field2');}
+    if(!empty($this->config->get('snapinst_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapinst_custom_field3');}
 
     try {
-      error_log(print_r($payloads,TRUE));
-      error_log(json_encode($payloads));
+      // error_log(print_r($payloads,TRUE));
+      // error_log(json_encode($payloads));
       $snapToken = Veritrans_Snap::getSnapToken($payloads);      
       
       //$this->response->setOutput($redirUrl);
