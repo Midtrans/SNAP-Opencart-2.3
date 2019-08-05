@@ -21,6 +21,42 @@ class ControllerExtensionPaymentSnapio extends Controller {
       $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true));
     }
 
+    if (isset($this->error['warning'])) {
+      $data['error_warning'] = $this->error['warning'];
+    } else {
+      $data['error_warning'] = '';
+    }
+
+    if (isset($this->error['display_name'])) {
+      $data['error_display_name'] = $this->error['display_name'];
+    } else {
+      $data['error_display_name'] = '';
+    }
+    
+    if (isset($this->error['merchant_id'])) {
+      $data['error_merchant'] = $this->error['merchant_id'];
+    } else {
+      $data['error_merchant'] = '';
+    }
+
+    if (isset($this->error['server_key'])) {
+      $data['error_server_key'] = $this->error['server_key'];
+    } else {
+      $data['error_server_key'] = '';
+    }
+
+    if (isset($this->error['client_key'])) {
+      $data['error_client_key'] = $this->error['client_key'];
+    } else {
+      $data['error_client_key'] = '';
+    }
+
+    if (isset($this->error['min_txn'])) {
+      $data['error_min_txn'] = $this->error['min_txn'];
+    } else {
+      $data['error_min_txn'] = '';
+    }
+
     $language_entries = array(
 
       'heading_title',
@@ -37,9 +73,6 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'entry_merchant_id',
       'entry_server_key',
       'entry_client_key',
-      'entry_test',
-      'entry_total',
-      'entry_order_status',
       'entry_geo_zone',
       'entry_status',
       'entry_sort_order',
@@ -48,6 +81,13 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'entry_currency_conversion',
       'entry_client_key',
       'entry_display_name',
+      'entry_custom_field',
+      'entry_installment_term',
+      'entry_acq_bank',
+      'entry_bin_number',
+      
+      'help_min',
+      'help_custom_field',
 
       'button_save',
       'button_cancel'
@@ -94,10 +134,15 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'snapio_min_txn',
       'snapio_mixpanel',
       'snapio_payment_type',
-      'snapio_installment_terms',
+      'snapio_installment_term',
+      'snapio_acq_bank',
       'snapio_currency_conversion',
       'snapio_status',
+      'snapio_number',
       'snapio_display_name',
+      'snapio_custom_field1',
+      'snapio_custom_field2',
+      'snapio_custom_field3',
       'snapio_sanitization'
     );
 
@@ -145,26 +190,35 @@ class ControllerExtensionPaymentSnapio extends Controller {
     if (!$this->request->post['snapio_display_name']) {
       $this->error['display_name'] = $this->language->get('error_display_name');
     }
+        
+    // check for empty values
+    if (!$this->request->post['snapio_client_key']) {
+      $this->error['client_key'] = $this->language->get('error_client_key');
+    }
 
-    // version-specific validation
-    if (!$this->request->post['snapio_server_key']) {
-      $this->error['server_key'] = $this->language->get('error_server_key');
-    }      
-    
-      // default values
-    if (!$this->request->post['snapio_environment'])
-      $this->request->post['snapio_environment'] = 1;
-
-
+    // check for empty values
     if (!$this->request->post['snapio_server_key']) {
       $this->error['server_key'] = $this->language->get('error_server_key');
     }
-    
+
+    // default values
+    if (!$this->request->post['snapio_environment'])
+      $this->request->post['snapio_environment'] = 1;
+
+      // check for empty values
+    if (!$this->request->post['snapio_merchant_id']) {
+       $this->error['merchant_id'] = $this->language->get('error_merchant');
+    }
+      // check for empty values
+    if (!$this->request->post['snapio_min_txn']) {
+       $this->error['min_txn'] = $this->language->get('error_min_txn');
+    }
+
     // currency conversion to IDR
     if (!$this->request->post['snapio_currency_conversion'] && !$this->currency->has('IDR'))
       $this->error['currency_conversion'] = $this->language->get('error_currency_conversion');
 
-      return !$this->error;
+    return !$this->error;
   }
 }
 ?>

@@ -1,4 +1,4 @@
-<?php require_once(dirname(__FILE__) . '/midtrans_version.php'); ?>
+<?php require_once(dirname(__FILE__) . '/snap_midtrans_version.php'); ?>
 
 <?php if (count($errors) > 0): ?>
   <?php foreach ($errors as $error): ?>
@@ -26,6 +26,7 @@
   <form id="payment-form" method="post" action="index.php?route=extension/payment/snap/landing_redir">
     <input type="hidden" name="result_type" id="result-type" value=""></div>
     <input type="hidden" name="result_data" id="result-data" value=""></div>
+    <input type="hidden" name="result_origin" id="result-origin" value=""></div>
   <div class="buttons">
 
 		<div class="pull-right"> 
@@ -66,6 +67,7 @@
         //location = data;
         function trackResult(token, merchant_id, plugin_name, status, result) {
           var eventNames = {
+            pay: 'pg-pay',
             success: 'pg-success',
             pending: 'pg-pending',
             error: 'pg-error',
@@ -97,42 +99,32 @@
         var resultType = document.getElementById('result-type');
         var resultData = document.getElementById('result-data');
 
-        function changeResult(type,data){
+        function changeResult(type,data,origin){
           $("#result-type").val(type);
           $("#result-data").val(JSON.stringify(data));
+          $("#result-origin").val(origin);
           //resultType.innerHTML = type;
           //resultData.innerHTML = JSON.stringify(data);
         }
 
-  <?php
-  if ($disable_mixpanel == 0){?>
-        mixpanel.track(
-          'pg-pay', {
-            merchant_id: merch_id,
-            plugin_name: "oc23_installment_offline",
-            snap_token: data
-          }
-        );
-  <?php
-    }
-  ?>
+        trackResult(data, merch_id, 'oc23_installment_offline', 'pay', null);
 
         snap.pay(data, {
           onSuccess: function(result){
-            trackResult(data, merch_id, 'installment_offline', 'success', result);
-            changeResult('success', result);
+            trackResult(data, merch_id, 'oc23_installment_offline', 'success', result);
+            changeResult('success', result, 'snapio');
             console.log(result.status_message);
             $("#payment-form").submit();
           },
           onPending: function(result){
-            trackResult(data, merch_id, 'installment_offline', 'pending', result);
-            changeResult('pending', result);
+            trackResult(data, merch_id, 'oc23_installment_offline', 'pending', result);
+            changeResult('pending', result, 'snapio');
             console.log(result.status_message);
             $("#payment-form").submit();
           },
           onError: function(result){
-            trackResult(data, merch_id, 'installment_offline', 'error', result);
-            changeResult('error', result);
+            trackResult(data, merch_id, 'oc23_installment_offline', 'error', result);
+            changeResult('error', result, 'snapio');
             console.log(result.status_message);
             $.ajax({
                 url: 'index.php?route=extension/payment/snap/payment_cancel',
@@ -144,7 +136,7 @@
               });
           },
           onClose: function(){
-            trackResult(data, merch_id, 'installment_offline', 'close');
+            trackResult(data, merch_id, 'oc23_installment_offline', 'close');
             var c =  confirm("close button clicked. Do you really want to cancel your transaction?");
             if (c == true){
               $.ajax({

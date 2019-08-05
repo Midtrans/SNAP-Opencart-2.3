@@ -37,9 +37,9 @@
 	<div class="panel-body">
 	 <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-midtrans-snapbin" class="form-horizontal">
 	 <div class="form-group">
-      <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_status; ?></label>
-		<div class="col-sm-3">
-		 <select name="snapbin_status" id="input-mode" class="form-control">
+      <label class="col-sm-2 control-label" for="input-status"><?php echo $entry_status; ?></label>
+		<div class="col-sm-10">
+		 <select name="snapbin_status" id="input-status" class="form-control">
 		  <?php $options = array('1' => $text_enabled, '0' => $text_disabled) ?>
 		   <?php foreach ($options as $key => $value): ?>
 		    <option value="<?php echo $key ?>" <?php if ($key == $snapbin_status) echo 'selected' ?> ><?php echo $value ?></option>
@@ -50,34 +50,30 @@
 	<!-- Status -->
 
 	<div class="form-group required">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_display_name; ?></label>
-	   <div class="col-sm-3">
-		 <input type="text" name="snapbin_display_name" value="<?php echo $snapbin_display_name; ?>" id="input-merchant-id" class="form-control" />
-	   </div>
-	   <div class="col-sm-3">
-	     <?php if (isset($error['display_name'])) { ?>
-		  <div class="col-sm-3"> <?php echo $error['display_name']; ?> </div>
-		 <?php } ?>
+	  <label class="col-sm-2 control-label" for="input-display-name"><?php echo $entry_display_name; ?></label>
+	   <div class="col-sm-10">
+		 <input type="text" name="snapbin_display_name" value="<?php echo $snapbin_display_name; ?>" id="input-display-name" class="form-control" />
+            <?php if ($error_display_name) { ?>
+            <div class="text-danger"><?php echo $error_display_name; ?></div>
+            <?php } ?>
 	   </div>
 	</div>
 	<!-- Display name -->
 
-	<div class="form-group required v2_settings sensitive">
+	<div class="form-group required sensitive">
 	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_merchant_id; ?></label>
-		<div class="col-sm-3">
+		<div class="col-sm-10">
 		  <input type="text" name="snapbin_merchant_id" value="<?php echo $snapbin_merchant_id; ?>" id="input-merchant-id" class="form-control" />
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['merchant_id'])) { ?>
-		   <div class="col-sm-3"> <?php echo $error['merchant_id']; ?> </div>
-		 <?php } ?>
+            <?php if ($error_merchant) { ?>
+            <div class="text-danger"><?php echo $error_merchant; ?></div>
+            <?php } ?>
 		</div>
 	</div>
 	<!-- Merchant Id (v2-specific) -->
 
-	<div class="form-group v2_settings sensitive required">
+	<div class="form-group sensitive">
 	  <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_environment; ?></label>
-	    <div class="col-sm-3">
+	    <div class="col-sm-10">
 		  <select name="snapbin_environment" id="input-mode" class="form-control">
 		    <?php $options = array('development' => 'Sandbox', 'production' => 'Production') ?>
 			<?php foreach ($options as $key => $value): ?>
@@ -85,97 +81,144 @@
 			<?php endforeach ?>
 		  </select>
 		</div>
-		<div class="col-sm-3">
-		<?php if (isset($error['environment'])) { ?>
-		  <div class="col-sm-3"> <?php echo $error['environment']; ?> </div>
-		<?php } ?>
-		</div>
 	</div>
 	<!-- Environment (v2-specific) -->
 
-	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_client_key; ?></label>
-		<div class="col-sm-3">
-		  <input type="text" name="snapbin_client_key" value="<?php echo $snapbin_client_key; ?>" id="input-merchant-id" class="form-control" />
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['client_key'])) { ?>
-		   <div class="col-sm-3"> <?php echo $error['client_key']; ?> </div>
-		 <?php } ?>
+	<div class="form-group required sensitive">
+	  <label class="col-sm-2 control-label" for="input-client-key"><?php echo $entry_client_key; ?></label>
+		<div class="col-sm-10">
+		  <input type="text" name="snapbin_client_key" value="<?php echo $snapbin_client_key; ?>" id="input-client-key" class="form-control" />
+            <?php if ($error_client_key) { ?>
+            <div class="text-danger"><?php echo $error_client_key; ?></div>
+            <?php } ?>
 		</div>
 	</div>
 	<!-- Client Key (v2-specific) -->
 
-	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_server_key; ?></label>
-		<div class="col-sm-3">
-		  <input type="text" name="snapbin_server_key" value="<?php echo $snapbin_server_key; ?>" id="input-merchant-id" class="form-control" />
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['server_key'])) { ?>
-		   <div class="col-sm-3"> <?php echo $error['server_key']; ?> </div>
-		 <?php } ?>
+	<div class="form-group required sensitive">
+	  <label class="col-sm-2 control-label" for="input-server-key"><?php echo $entry_server_key; ?></label>
+		<div class="col-sm-10">
+		  <input type="text" name="snapbin_server_key" value="<?php echo $snapbin_server_key; ?>" id="input-server-key" class="form-control" />
+            <?php if ($error_server_key) { ?>
+            <div class="text-danger"><?php echo $error_server_key; ?></div>
+            <?php } ?>
 		</div>
 	</div>
 	<!-- Server Key (v2-specific) -->
 
 	<div class="form-group">
-      <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_oneclick; ?></label>
-		<div class="col-sm-3">
-		 <select name="snapbin_oneclick" id="input-mode" class="form-control">
+	  <label class="col-sm-2 control-label" for="input-enabled-payments"><?php echo $entry_enabled_payments; ?></label>
+		<div class="col-sm-10">
+		  <input type="text" name="snapbin_enabled_payments" value="<?php echo $snapbin_enabled_payments; ?>" id="input-enabled-payments" class="form-control" />
+		  <span>Customize allowed payment method, separate payment method code with coma. e.g: bank_transfer,credit_card. <br>Leave it default if you are not sure.</span>
+		</div>
+	</div>
+	<!-- Enabled Payments -->
+
+	<div class="form-group">
+      <label class="col-sm-2 control-label" for="input-3d-secure"><?php echo $entry_3d_secure; ?></label>
+		<div class="col-sm-10">
+		 <select name="snapbin_3d_secure" id="input-3d-secure" class="form-control">
+		  <?php $options = array('1' => $text_disabled, '0' => $text_enabled) ?>
+		   <?php foreach ($options as $key => $value): ?>
+		    <option value="<?php echo $key ?>" <?php if ($key == $snapbin_3d_secure) echo 'selected' ?> ><?php echo $value ?></option>
+		   <?php endforeach ?>
+		  </select>
+		 <span>You must enable 3D Secure.<br>Please contact us if you wish to disable this feature in the Production environment.</span>
+		</div>
+	 </div>
+	<!-- 3D Secure -->
+
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-acq-bank"><?php echo $entry_acq_bank; ?></label>
+		<div class="col-sm-10">
+		  <input type="text" name="snapbin_acq_bank" value="<?php echo $snapbin_acq_bank; ?>" id="input-acq-bank" class="form-control" />
+		  <span>Specify your acquiring bank for this payment option.<br>Options: BCA, BRI, MEGA, MAYBANK, BNI, MANDIRI, CIMB, etc (Only choose 1 bank).<br>Leave it blank for default.</span>
+		</div>
+	</div>
+	<!-- Acquiring Bank -->
+
+	<div class="form-group sensitive">
+	  <label class="col-sm-2 control-label" for="input-bin-number"><?php echo $entry_bin_number; ?></label>
+		<div class="col-sm-10">
+		  <input type="text" name="snapbin_number" value="<?php echo $snapbin_number; ?>" id="input-bin-number" class="form-control" />
+		  <span>Fill with CC BIN numbers (or bank name) that you want to allow to use this payment button.<br>Separate BIN number with coma Example: 4,5,4811,bni,mandiri.<br>Leave it blank if you are not sure!</span>
+		</div>
+	</div>
+	<!-- Bin Number -->
+
+	<div class="form-group">
+      <label class="col-sm-2 control-label" for="input-save-card"><span data-toggle="tooltip" title="<?php echo $help_savecard; ?>"><?php echo $entry_oneclick; ?></span></label>
+		<div class="col-sm-10">
+		 <select name="snapbin_oneclick" id="input-save-card" class="form-control">
 		  <?php $options = array('1' => $text_enabled, '0' => $text_disabled) ?>
 		   <?php foreach ($options as $key => $value): ?>
 		    <option value="<?php echo $key ?>" <?php if ($key == $snapbin_oneclick) echo 'selected' ?> ><?php echo $value ?></option>
 		   <?php endforeach ?>
 		  </select>
 		</div>
-	 </div>
-	<!-- One Click (v2-specific) -->
+		<div class="col-sm-2"></div>
+		<div class="col-sm-10"><span>Leave it disabled if you are not sure!</span></div>
+	 </div>	
+	<!-- Save Card -->
 
-	<div class="form-group required v2_settings sensitive">
-	  <label class="col-sm-2 control-label" for="input-bin_number"><?php echo $entry_bin_number; ?></label>
-		<div class="col-sm-3">
-		  <input type="text" name="snapbin_bin_number" value="<?php echo $snapbin_bin_number; ?>" id="input-merchant-id" class="form-control" />
-		<span>use comma(,) to separate multiple number. e.g: 4,5,4811,4821</span>
-		</div>
-		<div class="col-sm-3">
-		 <?php if (isset($error['bin_number'])) { ?>
-		   <div class="col-sm-3"> <?php echo $error['server_key']; ?> </div>
-		 <?php } ?>
-		</div>
-	</div>
-	<!-- Bin Number (v2-specific) -->
-
-	<div class="form-group required v2_settings sensitive">
-      <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_mixpanel; ?></label>
-		<div class="col-sm-3">
-		 <select name="snap_mixpanel" id="input-mode" class="form-control">
+	<div class="form-group sensitive">
+      <label class="col-sm-2 control-label" for="input-mixpanel"><?php echo $entry_mixpanel; ?></label>
+		<div class="col-sm-10">
+		 <select name="snapbin_mixpanel" id="input-mixpanel" class="form-control">
 		  <?php $options = array('1' => $text_disabled, '0' => $text_enabled) ?>
 		   <?php foreach ($options as $key => $value): ?>
-		    <option value="<?php echo $key ?>" <?php if ($key == $snap_mixpanel) echo 'selected' ?> ><?php echo $value ?></option>
+		    <option value="<?php echo $key ?>" <?php if ($key == $snapbin_mixpanel) echo 'selected' ?> ><?php echo $value ?></option>
 		   <?php endforeach ?>
 		  </select>
 		</div>
 	 </div>
 	 <!-- mixpanel -->
 
-	<div class="form-group required">
-	 <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_currency_conversion; ?></label>
+	 <div class="form-group sensitive">
+	  <label class="col-sm-2 control-label" for="input-expiry"><span data-toggle="tooltip" title="<?php echo $help_expiry; ?>"><?php echo $entry_expiry; ?></span></label>
+	    <div class="col-sm-3">
+			<input type="text" name="snapbin_expiry_duration" placeholder="filled with number" value="<?php echo $snapbin_expiry_duration; ?>" id="input-expiry" class="form-control" />
+			<span>Leave it blank for default.</span>
+		</div>
+	    <div class="col-sm-3">
+		  <select name="snapbin_expiry_unit" id="input-expiry" class="form-control">
+		    <?php $options = array('minutes' => 'minutes', 'hour' => 'hour','day' => 'day') ?>
+			<?php foreach ($options as $key => $value): ?>
+			  <option value="<?php echo $key ?>" <?php if ($key == $snapbin_expiry_duration) echo 'selected' ?> ><?php echo $value ?></option>
+			<?php endforeach ?>
+		  </select>
+		</div>
+	</div>
+	<!-- custom expiry -->
+
+	<div class="form-group">
+	 <label class="col-sm-2 control-label" for="input-custom-field"><span data-toggle="tooltip" title="<?php echo $help_custom_field; ?>"><?php echo $entry_custom_field; ?></span></label>
 	  <div class="col-sm-3">
-	   <input type="text" name="snapbin_currency_conversion" value="<?php echo $snapbin_currency_conversion; ?>" class="form-control" />
-		<span>Set to 1 if your default currency is IDR</span>
+	   <input type="text" name="snapbin_custom_field1" value="<?php echo $snapbin_custom_field1; ?>" class="form-control" />
 	  </div>
 	  <div class="col-sm-3">
-		<?php if (isset($error['currency_conversion'])) { ?>
-		<div class="col-sm-3"> <?php echo $error['currency_conversion']; ?> </div>
-		<?php } ?>
+	   <input type="text" name="snapbin_custom_field2" value="<?php echo $snapbin_custom_field2; ?>" class="form-control" />
+	  </div>
+	  <div class="col-sm-3">
+	   <input type="text" name="snapbin_custom_field3" value="<?php echo $snapbin_custom_field3; ?>" class="form-control" />
+	  </div>
+	  <div class="col-sm-2"></div><div class="col-sm-10"><span>Leave it blank if you are not sure!</span></div>
+	</div>
+	<!-- custom field -->
+
+	<div class="form-group required">
+	 <label class="col-sm-2 control-label" for="input-currency"><?php echo $entry_currency_conversion; ?></label>
+	  <div class="col-sm-10">
+	   <input type="text" name="snapbin_currency_conversion" value="<?php echo $snapbin_currency_conversion; ?>" class="form-control" />
+		<span>Set to 1 if your default currency is IDR</span>
 	  </div>
 	</div>
 	<!-- Currency -->
 
-	<div class="form-group v2_vtweb_settings">
-	 <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_geo_zone; ?></label>
-	  <div class="col-sm-3">
+	<div class="form-group">
+	 <label class="col-sm-2 control-label" for="input-geo-zone"><?php echo $entry_geo_zone; ?></label>
+	  <div class="col-sm-10">
 	   <select name="snapbin_geo_zone_id"  class="form-control">
 		<option value="0"><?php echo $text_all_zones; ?></option>
 		<?php foreach ($geo_zones as $geo_zone) { ?>
@@ -191,15 +234,12 @@
 	<!-- Geo Zone -->
 
 	<div class="form-group">
-	  <label class="col-sm-2 control-label" for="input-merchant-id"><?php echo $entry_sort_order; ?></label>
-		<div class="col-sm-1">
+	  <label class="col-sm-2 control-label" for="input-sort-order"><?php echo $entry_sort_order; ?></label>
+		<div class="col-sm-2">
 		 <input size="1" type="text" name="snapbin_sort_order" value="<?php echo $snapbin_sort_order; ?>" class="form-control" />
 		</div>
 	</div>
-	
-	<div>
-	 <center><font size="1">version 1.0</font></center>
-	</div>
+	<!-- Sort Order -->
 
    </form>
   </div>

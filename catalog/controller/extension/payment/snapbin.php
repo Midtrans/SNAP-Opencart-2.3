@@ -205,34 +205,48 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    $serverKey = $this->config->get('snapbin_server_key');
-    Veritrans_Config::$serverKey = $serverKey;
-
-    Veritrans_Config::$isProduction =
-        $this->config->get('snapbin_environment') == 'production'
-        ? true : false;
-
-    Veritrans_Config::$is3ds = true;
-
+    Veritrans_Config::$serverKey = $this->config->get('snapbin_server_key');
+    Veritrans_Config::$isProduction = $this->config->get('snapbin_environment') == 'production' ? true : false;
     Veritrans_Config::$isSanitized = true;
-
-    $bin = explode(',', $this->config->get('snapbin_bin_number'));
-    error_log($this->config->get('snapbin_bin_number'));
-    $credit_card['whitelist_bins'] = $bin;
-    $credit_card['secure'] = true;
 
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
     $payloads['item_details']        = $item_details;
     $payloads['customer_details']    = $customer_details;
-    $payloads['enabled_payments']    = array('credit_card');
-    $payloads['credit_card'] = $credit_card;
+    $payloads['credit_card']['secure'] = $this->config->get('snapbin_3d_secure') == 1 ? false : true;
+
+    if (strlen($this->config->get('snapbin_number')) > 0) {
+      $bin = explode(',', $this->config->get('snapbin_number'));
+      $payloads['credit_card']['whitelist_bins'] = $bin;
+    }
+
+    if ($this->config->get('payment_snapbin_acq_bank') !== '') {
+      $payloads['credit_card']['bank'] = $this->config->get('payment_snapbin_acq_bank');
+    }
+
+    $enabled_payments = explode(',', $this->config->get('snapbin_enabled_payments'));
+    if (!empty($enabled_payments[0]))
+      $payloads['enabled_payments'] = $enabled_payments;
+
+    $expiry_unit = $this->config->get('snapbin_expiry_unit');
+    $expiry_duration = $this->config->get('snapbin_expiry_duration');
+    
+    if (!empty($expiry_unit) && !empty($expiry_duration)){
+          $time = time();
+          $payloads['expiry'] = array(
+            'unit' => $expiry_unit, 
+            'duration'  => $expiry_duration
+          );
+    }
 
     if($this->config->get('snapbin_oneclick') == 1){
-      $credit_card['save_card'] = true;
-      $payloads['user_id'] = crypt( $order_info['email'], $serverKey );
+      $payloads['credit_card']['save_card'] = true;
+      $payloads['user_id'] = crypt( $order_info['email'], $this->config->get('snapbin_server_key') );
     }
-    $payloads['credit_card'] = $credit_card;
+
+    if(!empty($this->config->get('snapbin_custom_field1'))){$payloads['custom_field1'] = $this->config->get('snapbin_custom_field1');}
+    if(!empty($this->config->get('snapbin_custom_field2'))){$payloads['custom_field2'] = $this->config->get('snapbin_custom_field2');}
+    if(!empty($this->config->get('snapbin_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapbin_custom_field3');}
 
     try {
       $snapToken = Veritrans_Snap::getSnapToken($payloads);      
