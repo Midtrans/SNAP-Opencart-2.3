@@ -77,10 +77,16 @@ class ControllerExtensionPaymentSnap extends Controller {
       'entry_currency_conversion',
       'entry_client_key',
       'entry_display_name',
+      'entry_success_mapping',
+      'entry_pending_mapping',
+      'entry_failure_mapping',
       
       'help_savecard',
       'help_expiry',
       'help_custom_field',
+      'help_success_mapping',
+      'help_pending_mapping',
+      'help_failure_mapping',
 
       'button_save',
       'button_cancel'
@@ -142,6 +148,30 @@ class ControllerExtensionPaymentSnap extends Controller {
       } else {
         $data[$input] = $this->config->get($input);
       }
+    }
+
+    if (isset($this->request->post['snap_status_success'])) {
+      $data['snap_status_success'] = $this->request->post['snap_status_success'];
+    } elseif ($this->config->get('snap_status_success')) {
+      $data['snap_status_success'] = $this->config->get('snap_status_success');
+    } else {
+      $data['snap_status_success'] = '2';
+    }
+
+    if (isset($this->request->post['snap_status_pending'])) {
+      $data['snap_status_pending'] = $this->request->post['snap_status_pending'];
+    } elseif ($this->config->get('snap_status_pending')) {
+      $data['snap_status_pending'] = $this->config->get('snap_status_pending');
+    } else {
+      $data['snap_status_pending'] = '1';
+    }
+
+    if (isset($this->request->post['snap_status_failure'])) {
+      $data['snap_status_failure'] = $this->request->post['snap_status_failure'];
+    } elseif ($this->config->get('snap_status_failure')) {
+      $data['snap_status_failure'] = $this->config->get('snap_status_failure');
+    } else {
+      $data['snap_status_failure'] = '7';
     }
 
     $this->load->model('localisation/order_status');

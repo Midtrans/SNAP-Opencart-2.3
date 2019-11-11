@@ -80,10 +80,16 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       'entry_currency_conversion',
       'entry_geo_zone',
       'entry_sort_order',
-      
+      'entry_success_mapping',
+      'entry_pending_mapping',
+      'entry_failure_mapping',
+
       'help_savecard',
       'help_custom_field',
       'help_expiry',
+      'help_success_mapping',
+      'help_pending_mapping',
+      'help_failure_mapping',
 
       'button_save',
       'button_cancel'
@@ -143,6 +149,30 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       } else {
         $data[$input] = $this->config->get($input);
       }
+    }
+
+    if (isset($this->request->post['snapbin_status_success'])) {
+      $data['snapbin_status_success'] = $this->request->post['snapbin_status_success'];
+    } elseif ($this->config->get('snapbin_status_success')) {
+      $data['snapbin_status_success'] = $this->config->get('snapbin_status_success');
+    } else {
+      $data['snapbin_status_success'] = '2';
+    }
+
+    if (isset($this->request->post['snapbin_status_pending'])) {
+      $data['snapbin_status_pending'] = $this->request->post['snapbin_status_pending'];
+    } elseif ($this->config->get('snapbin_status_pending')) {
+      $data['snapbin_status_pending'] = $this->config->get('snapbin_status_pending');
+    } else {
+      $data['snapbin_status_pending'] = '1';
+    }
+
+    if (isset($this->request->post['snapbin_status_failure'])) {
+      $data['snapbin_status_failure'] = $this->request->post['snapbin_status_failure'];
+    } elseif ($this->config->get('snapbin_status_failure')) {
+      $data['snapbin_status_failure'] = $this->config->get('snapbin_status_failure');
+    } else {
+      $data['snapbin_status_failure'] = '7';
     }
 
     $this->load->model('localisation/order_status');

@@ -166,6 +166,54 @@
 	 </div>
 	 <!-- mixpanel -->
 
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-success-status"><span data-toggle="tooltip" title="<?php echo $help_success_mapping; ?>"><?php echo $entry_success_mapping; ?></span></label>
+      <div class="col-sm-10">
+		 <select name="snap_status_success" id="input-success-status" class="form-control">
+		  <?php foreach ($order_statuses as $order_status) { ?>
+		  	<?php if ($order_status['order_status_id'] == $snap_status_success) { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+		  	<?php } else { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name'];?></option>
+		  	<?php } ?>
+		  <?php } ?>
+		  </select>
+	  </div>
+	</div>
+    <!-- Success Order Status -->
+
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-pending-status"><span data-toggle="tooltip" title="<?php echo $help_pending_mapping; ?>"><?php echo $entry_pending_mapping; ?></span></label>
+      <div class="col-sm-10">
+		 <select name="snap_status_pending" id="input-pending-status" class="form-control">
+		  <?php foreach ($order_statuses as $order_status) { ?>
+		  	<?php if ($order_status['order_status_id'] == $snap_status_pending) { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+		  	<?php } else { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name'];?></option>
+		  	<?php } ?>
+		  <?php } ?>
+		  </select>
+	  </div>
+	</div>
+    <!-- Pending Order Status -->
+
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-failure-status"><span data-toggle="tooltip" title="<?php echo $help_failure_mapping; ?>"><?php echo $entry_failure_mapping; ?></span></label>
+      <div class="col-sm-10">
+		 <select name="snap_status_failure" id="input-failure-status" class="form-control">
+		  <?php foreach ($order_statuses as $order_status) { ?>
+		  	<?php if ($order_status['order_status_id'] == $snap_status_failure) { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+		  	<?php } else { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name'];?></option>
+		  	<?php } ?>
+		  <?php } ?>
+		  </select>
+	  </div>
+	</div>
+    <!-- Failure Order Status -->
+
 	<div class="form-group required">
 	 <label class="col-sm-2 control-label" for="input-currency"><?php echo $entry_currency_conversion; ?></label>
 	  <div class="col-sm-10">
