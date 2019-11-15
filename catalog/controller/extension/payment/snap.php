@@ -17,7 +17,7 @@ status code
 16 voided
 */
 
-require_once(DIR_SYSTEM . 'library/veritrans-php/Veritrans.php');
+require_once(DIR_SYSTEM . 'library/midtrans-php/Midtrans.php');
 
 class ControllerExtensionPaymentSnap extends Controller {
 
@@ -198,9 +198,9 @@ class ControllerExtensionPaymentSnap extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    Veritrans_Config::$serverKey = $this->config->get('snap_server_key');
-    Veritrans_Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
-    Veritrans_Config::$isSanitized = true;
+    \Midtrans\Config::$serverKey = $this->config->get('snap_server_key');
+    \Midtrans\Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
+    \Midtrans\Config::$isSanitized = true;
 
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
@@ -234,19 +234,15 @@ class ControllerExtensionPaymentSnap extends Controller {
     if(!empty($custom_field[3])){ $payloads['custom_field3'] = $custom_field[3];}
 
     try {
+      $snapResponse = \Midtrans\Snap::createTransaction($payloads);
+      $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $snapResponse->redirect_url);
+      $this->cart->clear();
+
       if ($this->config->get('snap_redirect') == 1) {
-        $paymentUrl = Veritrans_Vtweb::getRedirectionUrl($payloads);
-        $this->cart->clear();
-        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
-        $this->response->setOutput($paymentUrl);
+        $this->response->setOutput($snapResponse->redirect_url);
       }
       else{
-        $snapToken = Veritrans_Snap::getSnapToken($payloads);
-        $this->cart->clear();
-        $environment = $this->config->get('snap_environment') == 'production' ? '' : 'sandbox';
-        $paymentUrl = 'https://app.' . $environment .'.midtrans.com/snap/v2/vtweb/' . $snapToken;
-        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
-        $this->response->setOutput($snapToken);
+        $this->response->setOutput($snapResponse->token);
       }
     }
     catch (Exception $e) {
@@ -298,9 +294,9 @@ class ControllerExtensionPaymentSnap extends Controller {
       // handle bca klikpay
     else if(isset($_GET['?id'])){
         $id = isset($_GET['?id']) ? $_GET['?id'] : null;
-        Veritrans_Config::$serverKey = $this->config->get('snap_server_key');
-        Veritrans_Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
-        $bca_status = Veritrans_Transaction::status($id);
+        \Midtrans\Config::$serverKey = $this->config->get('snap_server_key');
+        \Midtrans\Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
+        $bca_status = \Midtrans\Transaction::status($id);
         $transaction_status = null;
         // error_log(print_r($bca_status,TRUE));
         $payment_type = $bca_status->payment_type;
@@ -411,12 +407,12 @@ class ControllerExtensionPaymentSnap extends Controller {
   public function payment_notification() {
     //http://your_website/index.php?route=extension/payment/snap/payment_notification
 
-    Veritrans_Config::$serverKey = $this->config->get('snap_server_key');
-    Veritrans_Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
+    \Midtrans\Config::$serverKey = $this->config->get('snap_server_key');
+    \Midtrans\Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
     $this->earlyResponse();
     $this->load->model('checkout/order');
     $this->load->model('extension/payment/snap');
-    $notif = new Veritrans_Notification();
+    $notif = new \Midtrans\Notification();
     //error_log(print_r($notif,TRUE));
     $transaction = $notif->transaction_status;
     $fraud = $notif->fraud_status;

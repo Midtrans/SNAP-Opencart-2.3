@@ -1,9 +1,9 @@
-Official Veritrans SNAP OpenCart Extension
+Official Midtrans SNAP OpenCart Extension
 ===================================
 
-Veritrans :heart: OpenCart!
+Midtrans :heart: OpenCart!
 
-This is the official Veritrans extension for the OpenCart E-commerce platform.
+This is the official Midtrans extension for the OpenCart E-commerce platform.
 
 ## Compatibility
 1. PHP v5.4 and higher

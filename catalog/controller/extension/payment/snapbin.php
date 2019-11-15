@@ -17,7 +17,7 @@ status code
 16 voided
 */
 
-require_once(DIR_SYSTEM . 'library/veritrans-php/Veritrans.php');
+require_once(DIR_SYSTEM . 'library/midtrans-php/Midtrans.php');
 
 class ControllerExtensionPaymentSnapbin extends Controller {
 
@@ -198,9 +198,9 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    Veritrans_Config::$serverKey = $this->config->get('snapbin_server_key');
-    Veritrans_Config::$isProduction = $this->config->get('snapbin_environment') == 'production' ? true : false;
-    Veritrans_Config::$isSanitized = true;
+    \Midtrans\Config::$serverKey = $this->config->get('snapbin_server_key');
+    \Midtrans\Config::$isProduction = $this->config->get('snapbin_environment') == 'production' ? true : false;
+    \Midtrans\Config::$isSanitized = true;
 
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
@@ -242,19 +242,15 @@ class ControllerExtensionPaymentSnapbin extends Controller {
     if(!empty($this->config->get('snapbin_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapbin_custom_field3');}
 
     try {
+      $snapResponse = \Midtrans\Snap::createTransaction($payloads);
+      $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $snapResponse->redirect_url);
+      $this->cart->clear();
+
       if ($this->config->get('snapbin_redirect') == 1) {
-        $paymentUrl = Veritrans_Vtweb::getRedirectionUrl($payloads);
-        $this->cart->clear();
-        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
-        $this->response->setOutput($paymentUrl);
+        $this->response->setOutput($snapResponse->redirect_url);
       }
       else{
-        $snapToken = Veritrans_Snap::getSnapToken($payloads);
-        $this->cart->clear();
-        $environment = $this->config->get('snapbin_environment') == 'production' ? '' : 'sandbox';
-        $paymentUrl = 'https://app.' . $environment .'.midtrans.com/snap/v2/vtweb/' . $snapToken;
-        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
-        $this->response->setOutput($snapToken);
+        $this->response->setOutput($snapResponse->token);
       }
     }
     catch (Exception $e) {
