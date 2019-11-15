@@ -80,6 +80,7 @@ class ControllerExtensionPaymentSnap extends Controller {
       'entry_success_mapping',
       'entry_pending_mapping',
       'entry_failure_mapping',
+      'entry_redirect',
       
       'help_savecard',
       'help_expiry',
@@ -87,6 +88,7 @@ class ControllerExtensionPaymentSnap extends Controller {
       'help_success_mapping',
       'help_pending_mapping',
       'help_failure_mapping',
+      'help_redirect',
 
       'button_save',
       'button_cancel'
@@ -139,6 +141,7 @@ class ControllerExtensionPaymentSnap extends Controller {
       'snap_mixpanel',
       'snap_display_name',
       'snap_enabled_payments',
+      'snap_redirect',
       'snap_sanitization'
     );
 

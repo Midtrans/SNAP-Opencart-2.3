@@ -121,6 +121,21 @@
 	 </div>	 
 	 <!-- Save Card -->
 
+	<div class="form-group sensitive">
+      <label class="col-sm-2 control-label" for="input-redirect"><span data-toggle="tooltip" title="<?php echo $help_redirect; ?>"><?php echo $entry_redirect; ?></span></label>
+		<div class="col-sm-10">
+		 <select name="snap_redirect" id="input-redirect" class="form-control">
+		  <?php $options = array('0' => $text_disabled, '1' => $text_enabled) ?>
+		   <?php foreach ($options as $key => $value): ?>
+		    <option value="<?php echo $key ?>" <?php if ($key == $snap_redirect) echo 'selected' ?> ><?php echo $value ?></option>
+		   <?php endforeach ?>
+		  </select>
+		</div>
+		<div class="col-sm-2"></div>
+		<div class="col-sm-10"><span>Leave it disabled for default!</span></div>
+	 </div>
+	 <!-- Redirect Page -->
+
 	 <div class="form-group sensitive">
 	  <label class="col-sm-2 control-label" for="input-expiry"><span data-toggle="tooltip" title="<?php echo $help_expiry; ?>"><?php echo $entry_expiry; ?></span></label>
 	    <div class="col-sm-3">

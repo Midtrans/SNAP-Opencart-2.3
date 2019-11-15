@@ -29,11 +29,10 @@ class ControllerExtensionPaymentSnapio extends Controller {
       $data['base'] = $this->config->get('config_url');
     }
 
-
     $data['errors'] = array();
     $data['button_confirm'] = $this->language->get('button_confirm');
 
-    $env = $this->config->get('snap_environment') == 'production' ? true : false;
+    $env = $this->config->get('snapio_environment') == 'production' ? true : false;
     $data['mixpanel_key'] = $env == true ? "17253088ed3a39b1e2bd2cbcfeca939a" : "9dcba9b440c831d517e8ff1beff40bd9";
     $data['merchant_id'] = $this->config->get('snapio_merchant_id');
 
@@ -43,6 +42,7 @@ class ControllerExtensionPaymentSnapio extends Controller {
     $data['environment'] = $this->config->get('snapio_environment');
     $data['text_loading'] = $this->language->get('text_loading');
     $data['disable_mixpanel'] = $this->config->get('snapio_mixpanel');
+    $data['redirect'] = $this->config->get('snapio_redirect');
 
   	$data['process_order'] = $this->url->link('extension/payment/snapio/process_order');
 
@@ -74,12 +74,6 @@ class ControllerExtensionPaymentSnapio extends Controller {
 
     $order_info = $this->model_checkout_order->getOrder(
       $this->session->data['order_id']);
-    //error_log(print_r($order_info,TRUE));
-
-    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'],1);
-    /*$this->model_checkout_order->addOrderHistory($this->session->data['order_id'],
-        $this->config->get('veritrans_vtweb_challenge_mapping'));*/
-    
 
     $transaction_details                 = array();
     $transaction_details['order_id']     = $this->session->data['order_id'];
@@ -264,11 +258,20 @@ class ControllerExtensionPaymentSnapio extends Controller {
     if(!empty($this->config->get('snapio_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapio_custom_field3');}
 
     try {
-      // error_log(print_r($payloads,ssTRUE));
-      $snapToken = Veritrans_Snap::getSnapToken($payloads);      
-      
-      //$this->response->setOutput($redirUrl);
-      $this->response->setOutput($snapToken);
+      if ($this->config->get('snapio_redirect') == 1) {
+        $paymentUrl = Veritrans_Vtweb::getRedirectionUrl($payloads);
+        $this->cart->clear();
+        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
+        $this->response->setOutput($paymentUrl);
+      }
+      else{
+        $snapToken = Veritrans_Snap::getSnapToken($payloads);
+        $this->cart->clear();
+        $environment = $this->config->get('snapio_environment') == 'production' ? '' : 'sandbox';
+        $paymentUrl = 'https://app.' . $environment .'.midtrans.com/snap/v2/vtweb/' . $snapToken;
+        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
+        $this->response->setOutput($snapToken);
+      }
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();

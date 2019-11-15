@@ -88,12 +88,14 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'entry_success_mapping',
       'entry_pending_mapping',
       'entry_failure_mapping',
+      'entry_redirect',
       
       'help_min',
       'help_custom_field',
       'help_success_mapping',
       'help_pending_mapping',
       'help_failure_mapping',
+      'help_redirect',
 
       'button_save',
       'button_cancel'
@@ -149,6 +151,7 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'snapio_custom_field1',
       'snapio_custom_field2',
       'snapio_custom_field3',
+      'snap_redirect',
       'snapio_sanitization'
     );
 

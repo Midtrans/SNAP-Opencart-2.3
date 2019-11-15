@@ -32,7 +32,7 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $data['errors'] = array();
     $data['button_confirm'] = $this->language->get('button_confirm');
 
-    $env = $this->config->get('snap_environment') == 'production' ? true : false;
+    $env = $this->config->get('snapinst_environment') == 'production' ? true : false;
     $data['mixpanel_key'] = $env == true ? "17253088ed3a39b1e2bd2cbcfeca939a" : "9dcba9b440c831d517e8ff1beff40bd9";
     $data['merchant_id'] = $this->config->get('snapinst_merchant_id');
     
@@ -42,6 +42,7 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $data['environment'] = $this->config->get('snapinst_environment');
     $data['text_loading'] = $this->language->get('text_loading');
     $data['disable_mixpanel'] = $this->config->get('snapinst_mixpanel');
+    $data['redirect'] = $this->config->get('snapinst_redirect');
 
   	$data['process_order'] = $this->url->link('extension/payment/snapinst/process_order');
 
@@ -54,7 +55,6 @@ class ControllerExtensionPaymentSnapinst extends Controller {
         return $this->load->view('default/template/payment/snapinst.tpl', $data);
       }
     }
-
   }
 
   /**
@@ -73,13 +73,7 @@ class ControllerExtensionPaymentSnapinst extends Controller {
 
     $order_info = $this->model_checkout_order->getOrder(
       $this->session->data['order_id']);
-    //error_log(print_r($order_info,TRUE));
-
-    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'],1);
-    /*$this->model_checkout_order->addOrderHistory($this->session->data['order_id'],
-        $this->config->get('veritrans_vtweb_challenge_mapping'));*/
     
-
     $transaction_details                 = array();
     $transaction_details['order_id']     = $this->session->data['order_id'];
     $transaction_details['gross_amount'] = $order_info['total'];
@@ -220,7 +214,7 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $installment = array();
     $installment_term = array();
     
-    $installment_term['bni'] = array(3,6,9,12,15,18,21,24,27,30,33,36;
+    $installment_term['bni'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
     $installment_term['mandiri'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
     $installment_term['cimb'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
     $installment_term['bri'] = array(3,6,9,12,15,18,21,24,27,30,33,36);
@@ -231,29 +225,36 @@ class ControllerExtensionPaymentSnapinst extends Controller {
     $installment['required'] = TRUE;
     $installment['terms'] = $installment_term;    
 
-    if ($transaction_details['gross_amount'] >= $this->config->get('snapinst_min_txn')){
-      $credit_card['installment'] = $installment;
-    }
-
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
     $payloads['item_details']        = $item_details;
     $payloads['customer_details']    = $customer_details;
     $payloads['enabled_payments']    = array('credit_card');
-    $payloads['credit_card']['secure'] = true; 
-    $payloads['credit_card'] = $credit_card;
+    $payloads['credit_card']['secure'] = true;
+    
+    if ($transaction_details['gross_amount'] >= $this->config->get('snapinst_min_txn')){
+      $payloads['credit_card']['installment'] = $installment;
+    }
 
     if(!empty($this->config->get('snapinst_custom_field1'))){$payloads['custom_field1'] = $this->config->get('snapinst_custom_field1');}
     if(!empty($this->config->get('snapinst_custom_field2'))){$payloads['custom_field2'] = $this->config->get('snapinst_custom_field2');}
     if(!empty($this->config->get('snapinst_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapinst_custom_field3');}
 
     try {
-      // error_log(print_r($payloads,TRUE));
-      // error_log(json_encode($payloads));
-      $snapToken = Veritrans_Snap::getSnapToken($payloads);      
-      
-      //$this->response->setOutput($redirUrl);
-      $this->response->setOutput($snapToken);
+      if ($this->config->get('snapinst_redirect') == 1) {
+        $paymentUrl = Veritrans_Vtweb::getRedirectionUrl($payloads);
+        $this->cart->clear();
+        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
+        $this->response->setOutput($paymentUrl);
+      }
+      else{
+        $snapToken = Veritrans_Snap::getSnapToken($payloads);
+        $this->cart->clear();
+        $environment = $this->config->get('snapinst_environment') == 'production' ? '' : 'sandbox';
+        $paymentUrl = 'https://app.' . $environment .'.midtrans.com/snap/v2/vtweb/' . $snapToken;
+        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $paymentUrl);
+        $this->response->setOutput($snapToken);
+      }
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();

@@ -83,6 +83,7 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       'entry_success_mapping',
       'entry_pending_mapping',
       'entry_failure_mapping',
+      'entry_redirect',
 
       'help_savecard',
       'help_custom_field',
@@ -90,6 +91,7 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       'help_success_mapping',
       'help_pending_mapping',
       'help_failure_mapping',
+      'help_redirect',
 
       'button_save',
       'button_cancel'
@@ -141,6 +143,7 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       'snapbin_currency_conversion',
       'snapbin_geo_zone_id',
       'snapbin_sort_order',
+      'snapbin_redirect',
     );
 
     foreach ($inputs as $input) {

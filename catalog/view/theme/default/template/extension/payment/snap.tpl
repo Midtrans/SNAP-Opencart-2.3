@@ -22,7 +22,6 @@
   <form id="payment-form" method="post" action="index.php?route=extension/payment/snap/landing_redir">
     <input type="hidden" name="result_type" id="result-type" value=""></div>
     <input type="hidden" name="result_data" id="result-data" value=""></div>
-    <input type="hidden" name="result_origin" id="result-origin" value=""></div>
   <div class="buttons">
     <div class="pull-right">
     <input type="submit" value="<?php echo $button_confirm ?>" id="button-confirm" class="btn btn-primary " data-loading-text="<?php echo $text_loading; ?>"  />
@@ -58,47 +57,46 @@
         $('#button-confirm').button('reset');
       },
       success: function(data) {
-        //location = data;
+      <?php if ($redirect == 1) { ?>
+        window.location.href = data;
+      <?php } else {?>
 
-  <?php
-  if ($disable_mixpanel == 0){?>
-        function trackResult(token, merchant_id, plugin_name, status, result) {
-          var eventNames = {
-            pay: 'pg-pay',
-            success: 'pg-success',
-            pending: 'pg-pending',
-            error: 'pg-error',
-            close: 'pg-close'
-          };
-          mixpanel.track(
-            eventNames[status], {
-              merchant_id: merch_id,
-              cms_name: 'Opencart',
-              cms_version : '<?php echo VERSION; ?>',
-              plugin_name: plugin_name,
-              plugin_version: '<?php echo OC23_MIDTRANS_PLUGIN_VERSION; ?>',
-              snap_token: data,
-              payment_type: result ? result.payment_type: null,
-              order_id: result ? result.order_id: null,
-              status_code: result ? result.status_code: null,
-              gross_amount: result && result.gross_amount ? Number(result.gross_amount) : null,
+      <?php
+      if ($disable_mixpanel == 0){?>
+            function trackResult(token, merchant_id, plugin_name, status, result) {
+              var eventNames = {
+                pay: 'pg-pay',
+                success: 'pg-success',
+                pending: 'pg-pending',
+                error: 'pg-error',
+                close: 'pg-close'
+              };
+              mixpanel.track(
+                eventNames[status], {
+                  merchant_id: merch_id,
+                  cms_name: 'Opencart',
+                  cms_version : '<?php echo VERSION; ?>',
+                  plugin_name: plugin_name,
+                  plugin_version: '<?php echo OC23_MIDTRANS_PLUGIN_VERSION; ?>',
+                  snap_token: data,
+                  payment_type: result ? result.payment_type: null,
+                  order_id: result ? result.order_id: null,
+                  status_code: result ? result.status_code: null,
+                  gross_amount: result && result.gross_amount ? Number(result.gross_amount) : null,
+                }
+              );
             }
-          );
-        }
-  <?php
-  }
-  ?>
+      <?php
+      }
+      ?>
         console.log('token = '+data);
         
         var resultType = document.getElementById('result-type');
         var resultData = document.getElementById('result-data');
 
-        function changeResult(type,data,origin){
+        function changeResult(type,data){
           $("#result-type").val(type);
           $("#result-data").val(JSON.stringify(data));
-          $("#result-origin").val(origin);
-          //resultType.innerHTML = type;
-          //resultData.innerHTML = JSON.stringify(data);
         }
 
         <?php if ($disable_mixpanel == 0){?>
@@ -111,7 +109,7 @@
             <?php if ($disable_mixpanel == 0){?>
               trackResult(data, merch_id, 'oc23_fullpayment', 'success', result);
             <?php } ?>
-            changeResult('success', result, 'snap');
+            changeResult('success', result);
             console.log(result.status_message);
             $("#payment-form").submit();
           },
@@ -119,7 +117,7 @@
             <?php if ($disable_mixpanel == 0){?>
               trackResult(data, merch_id, 'oc23_fullpayment', 'pending', result);
             <?php } ?>
-            changeResult('pending', result, 'snap');
+            changeResult('pending', result);
             console.log(result.status_message);
             $("#payment-form").submit();
           },
@@ -127,7 +125,7 @@
             <?php if ($disable_mixpanel == 0){?>
               trackResult(data, merch_id, 'oc23_fullpayment', 'error', result);
             <?php } ?> 
-            changeResult('error', result, 'snap');
+            changeResult('error', result);
             console.log(result.status_message);
             $.ajax({
                 url: 'index.php?route=extension/payment/snap/payment_cancel',
@@ -159,6 +157,7 @@
             
           }
         });
+      <?php } ?>
       }
     });
   });
