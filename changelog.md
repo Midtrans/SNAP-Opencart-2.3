@@ -1,5 +1,11 @@
 # Changelog
 
+2.0.2
+-----
+- add order status mapping in admin settings
+- add redirect payment page option
+- update lib to midtrans-php
+
 2.0.1
 -----
 - add disable midtrans mixpanel on admin settings
