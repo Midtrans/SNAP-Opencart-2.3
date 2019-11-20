@@ -17,7 +17,7 @@ status code
 16 voided
 */
 
-require_once(DIR_SYSTEM . 'library/veritrans-php/Veritrans.php');
+require_once(DIR_SYSTEM . 'library/midtrans-php/Midtrans.php');
 
 class ControllerExtensionPaymentSnapbin extends Controller {
 
@@ -28,7 +28,6 @@ class ControllerExtensionPaymentSnapbin extends Controller {
     } else {
       $data['base'] = $this->config->get('config_url');
     }
-
 
     $data['errors'] = array();
     $data['button_confirm'] = $this->language->get('button_confirm');
@@ -42,11 +41,11 @@ class ControllerExtensionPaymentSnapbin extends Controller {
     $data['environment'] = $this->config->get('snapbin_environment');
     $data['text_loading'] = $this->language->get('text_loading');
     $data['disable_mixpanel'] = $this->config->get('snapbin_mixpanel');
+    $data['redirect'] = $this->config->get('snapbin_redirect');
 
   	$data['process_order'] = $this->url->link('extension/payment/snapbin/process_order');
 
     return $this->load->view('extension/payment/snapbin', $data);
-
 
   }
 
@@ -66,12 +65,6 @@ class ControllerExtensionPaymentSnapbin extends Controller {
 
     $order_info = $this->model_checkout_order->getOrder(
       $this->session->data['order_id']);
-    //error_log(print_r($order_info,TRUE));
-
-    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'],1);
-    /*$this->model_checkout_order->addOrderHistory($this->session->data['order_id'],
-        $this->config->get('veritrans_vtweb_challenge_mapping'));*/
-    
 
     $transaction_details                 = array();
     $transaction_details['order_id']     = $this->session->data['order_id'];
@@ -205,9 +198,9 @@ class ControllerExtensionPaymentSnapbin extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    Veritrans_Config::$serverKey = $this->config->get('snapbin_server_key');
-    Veritrans_Config::$isProduction = $this->config->get('snapbin_environment') == 'production' ? true : false;
-    Veritrans_Config::$isSanitized = true;
+    \Midtrans\Config::$serverKey = $this->config->get('snapbin_server_key');
+    \Midtrans\Config::$isProduction = $this->config->get('snapbin_environment') == 'production' ? true : false;
+    \Midtrans\Config::$isSanitized = true;
 
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
@@ -249,10 +242,16 @@ class ControllerExtensionPaymentSnapbin extends Controller {
     if(!empty($this->config->get('snapbin_custom_field3'))){$payloads['custom_field3'] = $this->config->get('snapbin_custom_field3');}
 
     try {
-      $snapToken = Veritrans_Snap::getSnapToken($payloads);      
-      
-      //$this->response->setOutput($redirUrl);
-      $this->response->setOutput($snapToken);
+      $snapResponse = \Midtrans\Snap::createTransaction($payloads);
+      $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $snapResponse->redirect_url);
+      $this->cart->clear();
+
+      if ($this->config->get('snapbin_redirect') == 1) {
+        $this->response->setOutput($snapResponse->redirect_url);
+      }
+      else{
+        $this->response->setOutput($snapResponse->token);
+      }
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();

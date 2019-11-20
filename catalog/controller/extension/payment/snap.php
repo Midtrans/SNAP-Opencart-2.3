@@ -17,7 +17,7 @@ status code
 16 voided
 */
 
-require_once(DIR_SYSTEM . 'library/veritrans-php/Veritrans.php');
+require_once(DIR_SYSTEM . 'library/midtrans-php/Midtrans.php');
 
 class ControllerExtensionPaymentSnap extends Controller {
 
@@ -41,7 +41,8 @@ class ControllerExtensionPaymentSnap extends Controller {
     $data['environment'] = $this->config->get('snap_environment');
     $data['text_loading'] = $this->language->get('text_loading');
     $data['disable_mixpanel'] = $this->config->get('snap_mixpanel');
-    
+    $data['redirect'] = $this->config->get('snap_redirect');
+
     $data['process_order'] = $this->url->link('extension/payment/snap/process_order'); 
      
     return $this->load->view('extension/payment/snap', $data);
@@ -64,12 +65,6 @@ class ControllerExtensionPaymentSnap extends Controller {
 
     $order_info = $this->model_checkout_order->getOrder(
       $this->session->data['order_id']);
-    //error_log(print_r($order_info,TRUE));
-
-    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'],1);
-    /*$this->model_checkout_order->addOrderHistory($this->session->data['order_id'],
-        $this->config->get('veritrans_vtweb_challenge_mapping'));*/
-    
 
     $transaction_details                 = array();
     $transaction_details['order_id']     = $this->session->data['order_id'];
@@ -203,9 +198,9 @@ class ControllerExtensionPaymentSnap extends Controller {
       $item_details[] = $coupon_item;
     }
 
-    Veritrans_Config::$serverKey = $this->config->get('snap_server_key');
-    Veritrans_Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
-    Veritrans_Config::$isSanitized = true;
+    \Midtrans\Config::$serverKey = $this->config->get('snap_server_key');
+    \Midtrans\Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
+    \Midtrans\Config::$isSanitized = true;
 
     $payloads = array();
     $payloads['transaction_details'] = $transaction_details;
@@ -229,7 +224,6 @@ class ControllerExtensionPaymentSnap extends Controller {
     if (!empty($expiry_unit) && !empty($expiry_duration)){
           $time = time();
           $payloads['expiry'] = array(
-            'start_time' => date("Y-m-d H:i:s O",$time), 
             'unit' => $expiry_unit, 
             'duration'  => $expiry_duration
           );
@@ -240,11 +234,16 @@ class ControllerExtensionPaymentSnap extends Controller {
     if(!empty($custom_field[3])){ $payloads['custom_field3'] = $custom_field[3];}
 
     try {
-      // error_log(print_r($payloads,TRUE));
-      $snapToken = Veritrans_Snap::getSnapToken($payloads);
-      // error_log($snapToken);
-      //$this->response->setOutput($redirUrl);
-      $this->response->setOutput($snapToken);
+      $snapResponse = \Midtrans\Snap::createTransaction($payloads);
+      $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, $snapResponse->redirect_url);
+      $this->cart->clear();
+
+      if ($this->config->get('snap_redirect') == 1) {
+        $this->response->setOutput($snapResponse->redirect_url);
+      }
+      else{
+        $this->response->setOutput($snapResponse->token);
+      }
     }
     catch (Exception $e) {
       $data['errors'][] = $e->getMessage();
@@ -260,179 +259,99 @@ class ControllerExtensionPaymentSnap extends Controller {
    * http://[your shop’s homepage]/index.php?route=payment/snap/payment_notification
    */
   public function landing_redir() {
-
     $this->load->model('checkout/order');
+    $this->load->model('account/order');
     $redirUrl = $this->config->get('config_ssl');
-    // $this->cart->clear();
 
-    if ($_POST['result_type'] == 'success') {
-        $this->cart->clear();
-        $redirUrl = $this->url->link('checkout/success&');
-        $this->response->redirect($redirUrl);
+    // Handling for SNAP REDIRECT
+    if (isset($_GET['status_code'])) {
+      if ($_GET['status_code'] == 200) {
+          $transaction_status = 'processing';
+      }
+      else if ($_GET['status_code'] == 201) {
+        $order_id = $_GET['order_id'];
+        $order_details = (object) $this->model_checkout_order->getOrder($order_id);
+        $transaction_status = strtolower($order_details->order_status);
+      }
+      else {
+        $redirUrl = $this->url->link('extension/payment/snap/failure');
+        $this->response->redirect($redirUrl); 
+      }
     }
 
-    else {
-      $origin = 'snap';
-      if (isset($_POST['result_origin'])) {
-        $origin = $_POST['result_origin'];
+    // Handling for SNAP POPUP
+    else if (isset($_POST['result_data'])) {
+      if ($_POST['result_type'] == 'success') {
+        $transaction_status = 'processing';
       }
-
-      Veritrans_Config::$serverKey = $this->config->get($origin . '_server_key');
-      Veritrans_Config::$isProduction = $this->config->get($origin . '_environment') == 'production' ? true : false;
-
-      $redirUrl = $this->url->link('checkout/success&');
-      /*$result_data = $_POST['result_data'];
-      $post_response = $_POST['response'];*/    
-      //error_log(print_r(json_decode($result_data),TRUE));
-      
-      if (isset($_POST['result_data'])) {
-        # code...
-        // $response = json_decode($_POST['response']);
+      else {
         $response = isset($_POST['result_data']) ? json_decode($_POST['result_data']) : json_decode($_POST['response']);
-        // error_log(print_r($response,TRUE));
-        // $transaction_status = Veritrans_Transaction::status($response->transaction_id)->transaction_status;
-        // error_log($transaction_status);
-        $payment_type = $response->payment_type;
-
-        $order_details = $this->model_checkout_order->getOrder($response->order_id);
-        $object1 = (object) $order_details;
-        $transaction_status = strtolower($object1->order_status);
-
-
+        $order_id = $response->order_id;
+        $order_details = (object) $this->model_checkout_order->getOrder($order_id);
+        $transaction_status = strtolower($order_details->order_status);
+      }    
+    }
       // handle bca klikpay
-      } else if(isset($_GET['?id'])){
-
+    else if(isset($_GET['?id'])){
         $id = isset($_GET['?id']) ? $_GET['?id'] : null;
-        $bca_status = Veritrans_Transaction::status($id);
+        \Midtrans\Config::$serverKey = $this->config->get('snap_server_key');
+        \Midtrans\Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
+        $bca_status = \Midtrans\Transaction::status($id);
         $transaction_status = null;
-        error_log(print_r($bca_status,TRUE));
+        // error_log(print_r($bca_status,TRUE));
         $payment_type = $bca_status->payment_type;
+        if($payment_type == "bca_klikpay"){
+          if($bca_status->transaction_status == "settlement")
+              {
+                $data['data']= array(
+                'payment_type' => "bca_klikpay",    
+                'payment_method' => "BCA KlikPay",  
+                'payment_status'  => "Success"
+                );   
+                $data['column_left'] = $this->load->controller('common/column_left');
+                $data['column_right'] = $this->load->controller('common/column_right');
+                $data['content_top'] = $this->load->controller('common/content_top');
+                $data['content_bottom'] = $this->load->controller('common/content_bottom');
+                $data['footer'] = $this->load->controller('common/footer');
+                $data['header'] = $this->load->controller('common/header');                
+                $redirUrl = $this->url->link('checkout/success&');
+                $this->response->redirect($redirUrl);
+            
+              }
+              else{
+                $redirUrl = $this->url->link('extension/payment/snap/failure','','SSL');
+                $this->response->redirect($redirUrl); 
+              }
+        }
       }
-      // $channel = array("bank_transfer", "echannel", "cstore");
-      
-      if($payment_type == "bca_klikpay"){
 
-        if($bca_status->transaction_status == "settlement")
-            {
-              $data['data']= array(
-              'payment_type' => "bca_klikpay",    
-              'payment_method' => "BCA KlikPay",  
-              'payment_status'  => "Success"
-              );   
-              $this->cart->clear();
+    if( $transaction_status == 'processing') {
+      $redirUrl = $this->url->link('checkout/success&');
+      $this->response->redirect($redirUrl);
+    }
 
-              $data['column_left'] = $this->load->controller('common/column_left');
-              $data['column_right'] = $this->load->controller('common/column_right');
-              $data['content_top'] = $this->load->controller('common/content_top');
-              $data['content_bottom'] = $this->load->controller('common/content_bottom');
-              $data['footer'] = $this->load->controller('common/footer');
-              $data['header'] = $this->load->controller('common/header');
-                            
-              
-              $this->response->setOutput($this->load->view('extension/payment/snap_exec',$data));
-          
-            }
-            else{
-              $redirUrl = $this->url->link('extension/payment/snap/failure','','SSL');
-              $this->response->redirect($redirUrl); 
-            }
-        
-
-      }else if( $transaction_status == 'processing') {
-        //if capture or pending or challenge or settlement, redirect to order received page
-        //$this->model_checkout_order->addOrderHistory($this->session->data['order_id'],2);
-        // $this->model_checkout_order->addOrderHistory($response->order_id,2);
-        $this->cart->clear();
-        $redirUrl = $this->url->link('checkout/success&');
-        $this->response->redirect($redirUrl);
-
-      }else if( $transaction_status == 'pending'){
-        $check = Veritrans_Transaction::status($response->transaction_id);
-        // $this->model_checkout_order->addOrderHistory($response->order_id,1);
-        $this->cart->clear();
-        
-        switch ($payment_type) {
-          case "bank_transfer":
-               
-            if(isset($response->va_numbers[0]->bank)){
-
-              $bank = $response->va_numbers[0]->bank;
-              $data['data']= array(
-              'payment_type' => $payment_type,  
-              'payment_method' => strtoupper($bank) . " Virtual Account",
-              'instruction' => $response->pdf_url,
-              'payment_code' => $response->va_numbers[0]->va_number,
-              );         
-                
-            }
-            else if(isset($response->permata_va_number)){
-
-              $data['data']= array(
-              'payment_type' => $payment_type,
-              'payment_method' => "Permata Virtual Account",
-              'instruction' => $response->pdf_url,
-              'payment_code' => $response->permata_va_number,
-              );         
-                
-            }
-            else {
-
-              $data['data']= array(
-              'payment_type' => $payment_type,
-              'payment_method' => "Bank Transfer",
-              'instruction' => $response->pdf_url,
-              'payment_code' => $response->va_number,
-              );         
-                
-            }          
-
-              break;
-          case "echannel":
-
-              $data['data']= array(
-              'payment_type' => $payment_type,
-              'payment_method' => "Mandiri Bill Payment",  
-              'instruction'  => $response->pdf_url,
-              'company_code' => $response->biller_code,
-              'payment_code' => $response->bill_key,
-              );         
-
-              break;
-          case "cstore":
-
-              $data['data']= array(
-              'payment_type' => $payment_type,
-              'payment_method' => "Convenience Store",  
-              'instruction'      => $response->pdf_url,
-              'payment_code' => $response->payment_code,
-              // 'expire' => $response->indomaret_expire_time
-              );         
-
-              break;
-          default:
-
-              $data['data']= array(
-              'payment_type' => $payment_type,
-              'payment_method' => $payment_type,
-              );  
-          }
+    else if( $transaction_status == 'pending'){
+      $comment_history = $this->model_account_order->getOrderHistories($order_id); 
+      $data['data']['comment'] = $comment_history[0]['comment'];
+      $data['data']['total'] = floor($order_details->total) . ' '. $order_details->currency_code;
+      $data['data']['payment_method'] = $order_details->payment_method;
+      $data['data']['order_id'] = $order_details->order_id;          
 
         $this->document->setTitle('Thank you. Your order has been received.'); //Optional. Set the title of your web page.
-             
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['column_right'] = $this->load->controller('common/column_right');
         $data['content_top'] = $this->load->controller('common/content_top');
         $data['content_bottom'] = $this->load->controller('common/content_bottom');
         $data['footer'] = $this->load->controller('common/footer');
         $data['header'] = $this->load->controller('common/header');
-    
+        $data['button_continue'] = 'Continue';
+        $data['continue'] = $this->url->link('common/home');
         $this->response->setOutput($this->load->view('extension/payment/snap_exec',$data));
-
       }
-      else{
+
+    else{
         $redirUrl = $this->url->link('extension/payment/snap/failure');
         $this->response->redirect($redirUrl); 
-      }
     }
   }
 
@@ -488,12 +407,12 @@ class ControllerExtensionPaymentSnap extends Controller {
   public function payment_notification() {
     //http://your_website/index.php?route=extension/payment/snap/payment_notification
 
-    Veritrans_Config::$serverKey = $this->config->get('snap_server_key');
-    Veritrans_Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
+    \Midtrans\Config::$serverKey = $this->config->get('snap_server_key');
+    \Midtrans\Config::$isProduction = $this->config->get('snap_environment') == 'production' ? true : false;
     $this->earlyResponse();
     $this->load->model('checkout/order');
     $this->load->model('extension/payment/snap');
-    $notif = new Veritrans_Notification();
+    $notif = new \Midtrans\Notification();
     //error_log(print_r($notif,TRUE));
     $transaction = $notif->transaction_status;
     $fraud = $notif->fraud_status;
@@ -507,41 +426,36 @@ class ControllerExtensionPaymentSnap extends Controller {
       if ($fraud == 'challenge') {
         $logs .= 'challenge ';
         $this->model_checkout_order->addOrderHistory(
-            $notif->order_id,2,$order_note . 
+            $notif->order_id,$this->config->get('snap_status_pending'),$order_note . 
             'Payment status challenged. Please take action on '
               . 'your Merchant Administration Portal.');
       }
       else if ($fraud == 'accept') {
         $logs .= 'accept ';
         $this->model_checkout_order->addOrderHistory(
-            $notif->order_id,2,$order_note);
+            $notif->order_id,$this->config->get('snap_status_success'),$order_note);
       }
     }
     else if ($transaction == 'cancel') {
         $logs .= 'cancel ';
         $this->model_checkout_order->addOrderHistory(
-            $notif->order_id,7,$order_note);
-    }
-    else if ($transaction == 'deny') {
-      $logs .= 'deny ';
-      $this->model_checkout_order->addOrderHistory(
-          $notif->order_id,8,$order_note);
+            $notif->order_id,$this->config->get('snap_status_failure'),$order_note);
     }
     else if ($transaction == 'pending') {
       $logs .= 'pending ';
       $this->model_checkout_order->addOrderHistory(
-          $notif->order_id,1,$order_note);
+          $notif->order_id,$this->config->get('snap_status_pending'),$order_note);
     }
     else if ($transaction == 'expire') {
       $logs .= 'pending ';
       $this->model_checkout_order->addOrderHistory(
-          $notif->order_id,7,$order_note);
+          $notif->order_id,$this->config->get('snap_status_failure'),$order_note);
     }
     else if ($transaction == 'settlement') {
           if($payment_type != 'credit_card'){
               $logs .= 'complete ';
               $this->model_checkout_order->addOrderHistory(
-              $notif->order_id,2,$order_note);
+              $notif->order_id,$this->config->get('snap_status_success'),$order_note);
           }
     }
     //error_log($logs); //debugan to be commented
@@ -552,7 +466,7 @@ class ControllerExtensionPaymentSnap extends Controller {
     $this->load->model('checkout/order');
     error_log($this->session->data['order_id']);
     $current_order_id = $this->session->data['order_id'];
-    $this->model_checkout_order->addOrderHistory($current_order_id,7,'Cancel from snap close.');
+    $this->model_checkout_order->addOrderHistory($current_order_id,$this->config->get('snap_status_failure'),'Cancel from snap close.');
     error_log('cancel order'. $this->session->data['order_id']. 'success');
     echo 'ok';
   }

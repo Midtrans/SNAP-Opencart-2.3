@@ -163,6 +163,21 @@
 	<!-- Save Card -->
 
 	<div class="form-group sensitive">
+      <label class="col-sm-2 control-label" for="input-redirect"><span data-toggle="tooltip" title="<?php echo $help_redirect; ?>"><?php echo $entry_redirect; ?></span></label>
+		<div class="col-sm-10">
+		 <select name="snapbin_redirect" id="input-redirect" class="form-control">
+		  <?php $options = array('0' => $text_disabled, '1' => $text_enabled) ?>
+		   <?php foreach ($options as $key => $value): ?>
+		    <option value="<?php echo $key ?>" <?php if ($key == $snapbin_redirect) echo 'selected' ?> ><?php echo $value ?></option>
+		   <?php endforeach ?>
+		  </select>
+		</div>
+		<div class="col-sm-2"></div>
+		<div class="col-sm-10"><span>Leave it disabled for default!</span></div>
+	 </div>
+	 <!-- Redirect Page -->
+
+	<div class="form-group sensitive">
       <label class="col-sm-2 control-label" for="input-mixpanel"><?php echo $entry_mixpanel; ?></label>
 		<div class="col-sm-10">
 		 <select name="snapbin_mixpanel" id="input-mixpanel" class="form-control">
@@ -206,6 +221,54 @@
 	  <div class="col-sm-2"></div><div class="col-sm-10"><span>Leave it blank if you are not sure!</span></div>
 	</div>
 	<!-- custom field -->
+
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-success-status"><span data-toggle="tooltip" title="<?php echo $help_success_mapping; ?>"><?php echo $entry_success_mapping; ?></span></label>
+      <div class="col-sm-10">
+		 <select name="snapbin_status_success" id="input-success-status" class="form-control">
+		  <?php foreach ($order_statuses as $order_status) { ?>
+		  	<?php if ($order_status['order_status_id'] == $snapbin_status_success) { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+		  	<?php } else { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name'];?></option>
+		  	<?php } ?>
+		  <?php } ?>
+		  </select>
+	  </div>
+	</div>
+    <!-- Success Order Status -->
+
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-pending-status"><span data-toggle="tooltip" title="<?php echo $help_pending_mapping; ?>"><?php echo $entry_pending_mapping; ?></span></label>
+      <div class="col-sm-10">
+		 <select name="snapbin_status_pending" id="input-pending-status" class="form-control">
+		  <?php foreach ($order_statuses as $order_status) { ?>
+		  	<?php if ($order_status['order_status_id'] == $snapbin_status_pending) { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+		  	<?php } else { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name'];?></option>
+		  	<?php } ?>
+		  <?php } ?>
+		  </select>
+	  </div>
+	</div>
+    <!-- Pending Order Status -->
+
+	<div class="form-group">
+	  <label class="col-sm-2 control-label" for="input-failure-status"><span data-toggle="tooltip" title="<?php echo $help_failure_mapping; ?>"><?php echo $entry_failure_mapping; ?></span></label>
+      <div class="col-sm-10">
+		 <select name="snapbin_status_failure" id="input-failure-status" class="form-control">
+		  <?php foreach ($order_statuses as $order_status) { ?>
+		  	<?php if ($order_status['order_status_id'] == $snapbin_status_failure) { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>" selected="selected"><?php echo $order_status['name']; ?></option>
+		  	<?php } else { ?>
+		  		<option value="<?php echo $order_status['order_status_id']; ?>"><?php echo $order_status['name'];?></option>
+		  	<?php } ?>
+		  <?php } ?>
+		  </select>
+	  </div>
+	</div>
+    <!-- Failure Order Status -->
 
 	<div class="form-group required">
 	 <label class="col-sm-2 control-label" for="input-currency"><?php echo $entry_currency_conversion; ?></label>

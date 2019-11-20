@@ -29,11 +29,19 @@ $_['entry_enabled_payments'] = 'Allowed Payment Method';
 $_['entry_acq_bank']	 = 'Acquiring Bank';
 $_['entry_expiry']   	 = 'Custom Expire';
 $_['entry_custom_field'] = 'Custom Field';
+$_['entry_success_mapping'] = 'Success Order Status';
+$_['entry_pending_mapping'] = 'Pending Order Status';
+$_['entry_failure_mapping'] = 'Failure Order Status';
+$_['entry_redirect'] = 'Redirect Payment Page';
 
 // Help
 $_['help_savecard'] = 'This will allow your customer to save their card on the payment popup, for faster payment flow on the following purchase.';
 $_['help_expiry'] = 'This will allow you to set custom duration on how long the transaction available to be paid.';
 $_['help_custom_field'] = 'This will allow you to set custom fields that will be displayed on Midtrans dashboard.';
+$_['help_success_mapping'] = 'Change to the following order status once the payment success';
+$_['help_pending_mapping'] = 'Change to the following order status once the payment pending';
+$_['help_failure_mapping'] = 'Change to the following order status once the payment failure';
+$_['help_redirect'] = 'This will redirect customer to Midtrans hosted payment page instead of popup payment page on your website.';
 
 // Error
 $_['error_permission']   = 'Warning: You do not have permission to modify!';

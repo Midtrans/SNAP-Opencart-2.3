@@ -83,9 +83,17 @@ class ControllerExtensionPaymentSnapinst extends Controller {
       'entry_client_key',
       'entry_display_name',
       'entry_custom_field',
+      'entry_success_mapping',
+      'entry_pending_mapping',
+      'entry_failure_mapping',
+      'entry_redirect',
       
       'help_min',
       'help_custom_field',
+      'help_success_mapping',
+      'help_pending_mapping',
+      'help_failure_mapping',
+      'help_redirect',
 
       'button_save',
       'button_cancel'
@@ -142,6 +150,7 @@ class ControllerExtensionPaymentSnapinst extends Controller {
       'snapinst_custom_field1',
       'snapinst_custom_field2',
       'snapinst_custom_field3',
+      'snapinst_redirect',
     );
 
     foreach ($inputs as $input) {
@@ -150,6 +159,30 @@ class ControllerExtensionPaymentSnapinst extends Controller {
       } else {
         $data[$input] = $this->config->get($input);
       }
+    }
+
+    if (isset($this->request->post['snapinst_status_success'])) {
+      $data['snapinst_status_success'] = $this->request->post['snapinst_status_success'];
+    } elseif ($this->config->get('snapinst_status_success')) {
+      $data['snapinst_status_success'] = $this->config->get('snapinst_status_success');
+    } else {
+      $data['snapinst_status_success'] = '2';
+    }
+
+    if (isset($this->request->post['snapinst_status_pending'])) {
+      $data['snapinst_status_pending'] = $this->request->post['snapinst_status_pending'];
+    } elseif ($this->config->get('snapinst_status_pending')) {
+      $data['snapinst_status_pending'] = $this->config->get('snapinst_status_pending');
+    } else {
+      $data['snap_status_pending'] = '1';
+    }
+
+    if (isset($this->request->post['snapinst_status_failure'])) {
+      $data['snapinst_status_failure'] = $this->request->post['snapinst_status_failure'];
+    } elseif ($this->config->get('snapinst_status_failure')) {
+      $data['snapinst_status_failure'] = $this->config->get('snapinst_status_failure');
+    } else {
+      $data['snapinst_status_failure'] = '7';
     }
 
     $this->load->model('localisation/order_status');

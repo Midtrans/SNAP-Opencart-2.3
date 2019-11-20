@@ -85,9 +85,17 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'entry_installment_term',
       'entry_acq_bank',
       'entry_bin_number',
+      'entry_success_mapping',
+      'entry_pending_mapping',
+      'entry_failure_mapping',
+      'entry_redirect',
       
       'help_min',
       'help_custom_field',
+      'help_success_mapping',
+      'help_pending_mapping',
+      'help_failure_mapping',
+      'help_redirect',
 
       'button_save',
       'button_cancel'
@@ -143,6 +151,7 @@ class ControllerExtensionPaymentSnapio extends Controller {
       'snapio_custom_field1',
       'snapio_custom_field2',
       'snapio_custom_field3',
+      'snap_redirect',
       'snapio_sanitization'
     );
 
@@ -153,6 +162,31 @@ class ControllerExtensionPaymentSnapio extends Controller {
         $data[$input] = $this->config->get($input);
       }
     }
+
+    if (isset($this->request->post['snapio_status_success'])) {
+      $data['snapio_status_success'] = $this->request->post['snapio_status_success'];
+    } elseif ($this->config->get('snapio_status_success')) {
+      $data['snapio_status_success'] = $this->config->get('snapio_status_success');
+    } else {
+      $data['snapio_status_success'] = '2';
+    }
+
+    if (isset($this->request->post['snapio_status_pending'])) {
+      $data['snapio_status_pending'] = $this->request->post['snapio_status_pending'];
+    } elseif ($this->config->get('snapio_status_pending')) {
+      $data['snapio_status_pending'] = $this->config->get('snapio_status_pending');
+    } else {
+      $data['snapio_status_pending'] = '1';
+    }
+
+    if (isset($this->request->post['snapio_status_failure'])) {
+      $data['snapio_status_failure'] = $this->request->post['snapio_status_failure'];
+    } elseif ($this->config->get('snapio_status_failure')) {
+      $data['snapio_status_failure'] = $this->config->get('snapio_status_failure');
+    } else {
+      $data['snapio_status_failure'] = '7';
+    }
+
 
     $this->load->model('localisation/order_status');
 

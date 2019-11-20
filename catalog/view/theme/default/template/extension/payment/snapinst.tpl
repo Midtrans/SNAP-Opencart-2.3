@@ -20,15 +20,13 @@
   ?>
 
   <div class="pull-left">
-    <h4>Transaction below <?php echo $min_txn?> will be treated as full payment</h4>
+    <h4>Transaction below <?php echo $min_txn?> will be treated as Installment</h4>
   </div>
   
   <form id="payment-form" method="post" action="index.php?route=extension/payment/snap/landing_redir">
     <input type="hidden" name="result_type" id="result-type" value=""></div>
     <input type="hidden" name="result_data" id="result-data" value=""></div>
-    <input type="hidden" name="result_origin" id="result-origin" value=""></div>
   <div class="buttons">
-
 		<div class="pull-right"> 
     <input type="submit" value="<?php echo $button_confirm ?>" id="button-confirm" class="btn btn-primary " data-loading-text="<?php echo $text_loading; ?>"  />
     </form>
@@ -64,8 +62,12 @@
         $('#button-confirm').button('reset');
       },
       success: function(data) {
-        //location = data;
+      <?php if ($redirect == 1) { ?>
+        window.location.href = data;
+      <?php } else {?>
 
+  <?php
+  if ($disable_mixpanel == 0){?>  
         function trackResult(token, merchant_id, plugin_name, status, result) {
           var eventNames = {
             pay: 'pg-pay',
@@ -74,9 +76,6 @@
             error: 'pg-error',
             close: 'pg-close'
           };
-
-  <?php
-  if ($disable_mixpanel == 0){?>          
           mixpanel.track(
             eventNames[status], {
               merchant_id: merch_id,
@@ -91,22 +90,18 @@
               gross_amount: result && result.gross_amount ? Number(result.gross_amount) : null,
             }
           );
-  <?php
-    }
-  ?>  
         }
-
+    <?php 
+    }
+    ?> 
         console.log('token = '+data);
         
         var resultType = document.getElementById('result-type');
         var resultData = document.getElementById('result-data');
 
-        function changeResult(type,data,origin){
+        function changeResult(type,data,){
           $("#result-type").val(type);
           $("#result-data").val(JSON.stringify(data));
-          $("#result-origin").val(origin);
-          //resultType.innerHTML = type;
-          //resultData.innerHTML = JSON.stringify(data);
         }
 
         trackResult(data, merch_id, 'oc23_installment_online', 'pay', null);
@@ -115,19 +110,19 @@
           
           onSuccess: function(result){
             trackResult(data, merch_id, 'oc23_installment_online', 'success', result);
-            changeResult('success', result, 'snapinst');
+            changeResult('success', result);
             console.log(result.status_message);
             $("#payment-form").submit();
           },
           onPending: function(result){
             trackResult(data, merch_id, 'oc23_installment_online', 'pending', result);
-            changeResult('pending', result, 'snapinst');
+            changeResult('pending', result);
             console.log(result.status_message);
             $("#payment-form").submit();
           },
           onError: function(result){
             trackResult(data, merch_id, 'oc23_installment_online', 'error', result);
-            changeResult('error', result, 'snapinst');
+            changeResult('error', result);
             console.log(result.status_message);
             $.ajax({
                 url: 'index.php?route=extension/payment/snap/payment_cancel',
@@ -157,6 +152,7 @@
             
           }
         });
+      <?php } ?>
       }
     });
   });
